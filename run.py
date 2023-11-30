@@ -1,10 +1,10 @@
-from flask import Flask       
+from flask import Flask, render_template           
 
 app = Flask(__name__)    
 
 @app.route('/', methods={'GET'})    
 def holamundo():
-    return 'Hola Mundocl' 
+    return render_template('/index.html') 
 
 @app.route('/mis_proyectos', methods=['GET'])    
 def mostrarproyectos():
