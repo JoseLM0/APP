@@ -25,3 +25,7 @@
     <button type="submit" class="btn btn-primary">Enviar</button>
     </form>
   {% endblock %}
+  
+  {% if nombre|length > 0 %} 
+  <script type="text/javascript"> alert("Hola {{nombre}} eres un buen programador!"); </script> 
+  {% endif %}
