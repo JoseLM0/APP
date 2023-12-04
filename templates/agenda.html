@@ -6,11 +6,11 @@
 {% block title %}Agenda{%endblock%}
 {%block columna8 %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/agenda.css' ) }}">
-<form>
+<form action ="/agenda" mehotd = "post" class = "form-horizontal">
   <div class = capa>
     <div class="form-group">
-      <label for="exampleFormControlInput1">Email address</label>
-      <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
+      <label for="exampleFormControlInput1">Correo Electronico</label>
+      <input type="correo" name = "Correo" class="form-control" id="exampleFormControlInput1" placeholder="nombre@mail.com">
     </div>
 
   <div class="form-group">
@@ -39,7 +39,7 @@
   </div>
 </div>
 <div class="g-recaptcha" align = "center" data-sitekey="{{ sitekey }}"></div>
-<button type="submit" class="btn btn-primary">Sign in</button>
+<button type="enviar" class="btn btn-primary">Enviar</button>
 </form>
 
 {%endblock %}

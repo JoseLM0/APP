@@ -1,35 +1,50 @@
 from flask import Flask, render_template, request              
+import requests, json   
+from forms import miformulario
+from flask_bootstrap import Bootstrap
 
-app = Flask(__name__)    
+app = Flask(__name__)   
+app.secret_key = "MxR[18]" 
+Bootstrap(app)  
+
 #INICIO
 
-@app.route('/', methods={'GET', 'POST'})    
+@app.route('/', methods=['GET'])    
 def index():
-    if request.method == 'POST':
-        nombre = request.form['Nombre'] 
-        return render_template('/index.html', nombre = nombre)  
-    else:  
-        return render_template('/index.html') 
+    return render_template('/index.html') 
 
-<<<<<<< HEAD
-<<<<<<<<< Temporary merge branch 1
-#AGENDA
-@app.route('/agenda', methods=['GET'])    
-def agenda():
-    return render_template('/agenda.html')
-
-#Contato
-@app.route('/Contacto')
-def contacto():
-    return render_template('/contacto.html')    
-=========
-=======
-
->>>>>>> master
 #Agenda
 @app.route('/agenda', methods=['GET', 'POST'])    
 def agenda():
-    return render_template('/agenda.html')
+    sitekey = "6LcvWiUpAAAAAC6XcX0GSeBHDVEAt67QjvggbkHF"
+    if request.method == "POST":
+        name = request.form['Nombre']
+        correo = request.form['Correo']
+        mensaje = request.form['Mensaje']
+        respuesta_del_captcha = request.form['g-recaptcha-response']
+        if comprobar_humano(respuesta_del_captcha):
+            #SI
+            status = "Exito."
+            print (status)
+        else:    
+            #No 
+            status = "Error, pruebe de nuevo."
+            print(status)
+
+    return render_template('/agenda.html', sitekey=sitekey)
+
+#Agenda2
+@app.route('/agenda2', methods=['GET', 'POST'])    
+def agenda2():
+    miform = miformulario()
+    if miform.validate_on_submit():
+        print(f"Nombre:{miform.nombre.data},Correo:{miform.correo.data},mensaje:{miform.mensaje.data}")
+    else: 
+        print("Algun dato es invalido")
+    
+    return render_template("agenda2.html", form=miform)
+
+
 #Contacto
 @app.route('/contacto', methods=['GET'])    
 def contacto():
@@ -50,12 +65,18 @@ def maquinaria():
 @app.route('/vehiculos', methods=['GET'])
 def vehiculos():
     return render_template('/vehiculos.html')
->>>>>>>>> Temporary merge branch 2
+
+#funcion Recaptcha
+def comprobar_humano (respuesta_del_captcha):
+    secret = "6LcvWiUpAAAAADbcpn0LoZTARnPCHFHLSsC98yU1"
+    payload = {'response': respuesta_del_captcha, 'secret':secret}
+    response = requests.post("https://www.google.com/recaptcha/api/siteverify", payload)
+    response_text = json.loads(response.text)
+    return response_text['success'] 
+
 
 if __name__ == '__main__':
     app.run(debug=True, host = '127.0.0.1', port = '5001')  
-<<<<<<< HEAD
 
-     
-=======
->>>>>>> master
+
+

@@ -1,35 +1,7 @@
 {% extends "base/base.html" %}
 
-<<<<<<<<< Temporary merge branch 1
-{% block title %}Inicio{% endblock %}  
-
-{% block columna8 %}
-<br>    
-<div class="alert alert-success" role="alert">
-    <h4 class="alert-heading">Bienvenido {{nombre}}</h4>
-    <p> PAGINA DE PRUEBA<p>
-    <hr>
-    <p class="mb-0">POR AHORA OK</p>     
-
-
-</div>
-
-{% endblock %}    
-
-    {% block columna4 %}
-    <p>Registro</p>
-    <form action="/" method="post">
-        <div class="form-group">
-            <label for="name">Ingrese su nombre</label>
-            <input type="text" class="form-control" name="Nombre">
-        </div>
-        <button type="submit" class="btn btn-primary">Enviar</button>
-    </form>
-
-    {% endblock %}  
-=========
 {% block title %}Inicio{% endblock %}
-
+<link rel="stylesheet" href="{{ url_for('static', filename='css/agenda2.css' ) }}">
 {%block columna8 %}
 <h1>ERP</h1>
 <h1>Gestion Municipal</h1>
