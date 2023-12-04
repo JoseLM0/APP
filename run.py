@@ -11,7 +11,7 @@ def index():
         return render_template('/index.html') 
 
 #Agenda
-@app.route('/agenda', methods=['GET'])    
+@app.route('/agenda', methods=['GET', 'POST'])    
 def agenda():
     return render_template('/agenda.html')
 #Contacto

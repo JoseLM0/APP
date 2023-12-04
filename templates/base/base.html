@@ -7,12 +7,16 @@
     <title>{% block title%} {%endblock%}</title>
     <!--BOOTSTRAP CSS --> 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-    <!--CSS DE FONDO-->>
+    <!--CSS DE FONDO-->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css')}}">  
+    {%block head%}
+    {%endblock%}
 </head>
 <body>
     <div class = "capa1">   
         {% include "nav/nav-bar.html" %}
+        {%block inicio%}
+        {%endblock%}
         <div class="container-fluid"> <!--Esto es un contenedor principal--> 
             <div class="container">    <!-- Aquí estamos usando la clase "container" de Bootstrap --> 
                 <div class="row">    <!-- Aquí estamos usando la clase "row" que significa "Fila", "o hilera"-->
