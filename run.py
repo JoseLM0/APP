@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 
 app = Flask(__name__)    
 #INICIO
+
 @app.route('/', methods={'GET', 'POST'})    
 def index():
     if request.method == 'POST':
@@ -10,6 +11,7 @@ def index():
     else:  
         return render_template('/index.html') 
 
+
 #Agenda
 @app.route('/agenda', methods=['GET', 'POST'])    
 def agenda():
@@ -17,7 +19,8 @@ def agenda():
 #Contacto
 @app.route('/contacto', methods=['GET'])    
 def contacto():
-    return render_template('/contacto.html')
+
+    return render_template('contacto.html')
 
 #EQUIPOS INFORMATICOS
 @app.route('/equipos_informaticos', methods=['GET'])
@@ -36,4 +39,3 @@ def vehiculos():
 
 if __name__ == '__main__':
     app.run(debug=True, host = '127.0.0.1', port = '5001')  
-     
