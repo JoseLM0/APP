@@ -11,6 +11,7 @@ def index():
     else:  
         return render_template('/index.html') 
 
+<<<<<<< HEAD
 <<<<<<<<< Temporary merge branch 1
 #AGENDA
 @app.route('/agenda', methods=['GET'])    
@@ -22,6 +23,9 @@ def agenda():
 def contacto():
     return render_template('/contacto.html')    
 =========
+=======
+
+>>>>>>> master
 #Agenda
 @app.route('/agenda', methods=['GET', 'POST'])    
 def agenda():
@@ -50,5 +54,8 @@ def vehiculos():
 
 if __name__ == '__main__':
     app.run(debug=True, host = '127.0.0.1', port = '5001')  
+<<<<<<< HEAD
 
      
+=======
+>>>>>>> master
