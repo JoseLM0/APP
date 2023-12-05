@@ -2,11 +2,16 @@ from flask import Flask, render_template, request
 import requests, json   
 from forms import miformulario
 from flask_bootstrap import Bootstrap
+from flask_recaptcha import ReCaptcha   
+from markupsafe import Markup
 
 app = Flask(__name__)   
+
 app.secret_key = "MxR[18]" 
 Bootstrap(app)  
-
+app.config['RECAPTCHA_SITE_KEY'] = '6LcvWiUpAAAAAC6XcX0GSeBHDVEAt67QjvggbkHF'
+app.config['RECAPTCHA_SECRET_KEY'] = '6LcvWiUpAAAAADbcpn0LoZTARnPCHFHLSsC98yU1'
+recaptcha = ReCaptcha(app)  
 #INICIO
 
 @app.route('/', methods=['GET'])    
@@ -37,7 +42,7 @@ def agenda():
 @app.route('/agenda2', methods=['GET', 'POST'])    
 def agenda2():
     miform = miformulario()
-    if miform.validate_on_submit():
+    if miform.validate_on_submit() and recaptcha.verify():
         print(f"Nombre:{miform.nombre.data},Correo:{miform.correo.data},mensaje:{miform.mensaje.data}")
     else: 
         print("Algun dato es invalido")
