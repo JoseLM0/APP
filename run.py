@@ -1,17 +1,17 @@
 from flask import Flask, render_template, request              
 import requests, json   
-from forms import miformulario
-from flask_bootstrap import Bootstrap
-from flask_recaptcha import ReCaptcha   
-from markupsafe import Markup
+from forms import miformulario, Registro, Registro_contactos
+from flask_bootstrap import Bootstrap  
+import config 
+from models import db, Usuarios, Contactos, Usuarios
+
 
 app = Flask(__name__)   
-
-app.secret_key = "MxR[18]" 
 Bootstrap(app)  
-app.config['RECAPTCHA_SITE_KEY'] = '6LcvWiUpAAAAAC6XcX0GSeBHDVEAt67QjvggbkHF'
-app.config['RECAPTCHA_SECRET_KEY'] = '6LcvWiUpAAAAADbcpn0LoZTARnPCHFHLSsC98yU1'
-recaptcha = ReCaptcha(app)  
+app.config.from_object(config)
+db.init_app(app)
+
+
 #INICIO
 
 @app.route('/', methods=['GET'])    
@@ -21,40 +21,29 @@ def index():
 #Agenda
 @app.route('/agenda', methods=['GET', 'POST'])    
 def agenda():
-    sitekey = "6LcvWiUpAAAAAC6XcX0GSeBHDVEAt67QjvggbkHF"
-    if request.method == "POST":
-        name = request.form['Nombre']
-        correo = request.form['Correo']
-        mensaje = request.form['Mensaje']
-        respuesta_del_captcha = request.form['g-recaptcha-response']
-        if comprobar_humano(respuesta_del_captcha):
-            #SI
-            status = "Exito."
-            print (status)
-        else:    
-            #No 
-            status = "Error, pruebe de nuevo."
-            print(status)
-
-    return render_template('/agenda.html', sitekey=sitekey)
-
-#Agenda2
-@app.route('/agenda2', methods=['GET', 'POST'])    
-def agenda2():
-    miform = miformulario()
-    if miform.validate_on_submit() and recaptcha.verify():
-        print(f"Nombre:{miform.nombre.data},Correo:{miform.correo.data},mensaje:{miform.mensaje.data}")
-    else: 
-        print("Algun dato es invalido")
     
-    return render_template("agenda2.html", form=miform)
+    return render_template('/agenda.html')
 
 
 #Contacto
-@app.route('/contacto', methods=['GET'])    
+@app.route('/contacto', methods=['GET', 'POST'])    
 def contacto():
+    form = Registro_contactos()
+    if form.validate_on_submit():
+        Nombre = form.Nombre.data
+        Apellido1 = form.Apellido1.data
+        Apellido2 = form.Apellido2.data
+        Telefono1 = form.Telefono1.data
+        Telefono2 = form.Telefono2.data
+        Correo1 = form.Correo1.data
+        Correo2 = form.Correo2.data
+        Empresa = form.Empresa.data
 
-    return render_template('contacto.html')
+        contacto_reg = Contactos(Nombre=Nombre, Apellido1=Apellido1, Apellido2=Apellido2, Telefono1=Telefono1, Telefono2=Telefono2, Correo1=Correo1, Correo2=Correo2, Empresa=Empresa)
+        contacto_reg.save()
+    
+    
+    return render_template('contacto.html', form=form)
 
 #EQUIPOS INFORMATICOS
 @app.route('/equipos_informaticos', methods=['GET'])
@@ -71,13 +60,11 @@ def maquinaria():
 def vehiculos():
     return render_template('/vehiculos.html')
 
-#funcion Recaptcha
-def comprobar_humano (respuesta_del_captcha):
-    secret = "6LcvWiUpAAAAADbcpn0LoZTARnPCHFHLSsC98yU1"
-    payload = {'response': respuesta_del_captcha, 'secret':secret}
-    response = requests.post("https://www.google.com/recaptcha/api/siteverify", payload)
-    response_text = json.loads(response.text)
-    return response_text['success'] 
+with app.app_context():
+    db.create_all()
+    db.session.commit()
+    contacto_reg = Contactos.query.all()
+    print(contacto_reg)
 
 
 if __name__ == '__main__':
