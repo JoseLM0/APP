@@ -1,24 +1,26 @@
 {% extends "base/base.html" %}
 
-{% block title %}Contactos{% endblock %}
+{% block title %}Registro{% endblock %}
 
 {%block columna8  %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/contacto.css' ) }}">
-<form action ="/contacto" mehotd = "post" class = "form-horizontal">
   <div class = "capa" role="alert">
 
   
-    <h4 class="alert-heading">Pagina de Contactos</h4>
-    <p>Lista de Contactos</p>
+    <h4 class="alert-heading">Registro de Usuarios</h4>
+    <p>Lista de Usuarios</p>
+     <!--BOOTSTRAP CSS --> 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
   
-
+    
+    <form method='POST'>
     {% import "bootstrap/wtf.html" as wtf %}
     {{ form.csrf_token() }}
     {{ wtf.quick_form(form) }}
+    </form>
 
-  
- 
+        
+   
 
 
 

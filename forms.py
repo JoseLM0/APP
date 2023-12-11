@@ -17,7 +17,7 @@ class Registro (FlaskForm):
     Apellido2 = StringField('Segundo Apellido', validators=[DataRequired(), Length(max=45)])
     Correo = StringField('Correo', validators=[DataRequired(), Email()])
     Password = PasswordField('Contraseña', validators=[DataRequired()])
-    submit = SubmitField('Registro')
+    submit = SubmitField('Guardar Registro')
 
 #Registro Contactos    
 class Registro_contactos(FlaskForm):
@@ -29,4 +29,4 @@ class Registro_contactos(FlaskForm):
     Correo1 = StringField('Correo 1º', validators=[DataRequired(), Email()])
     Correo2 = StringField('Correo 2º', validators=[DataRequired(), Email()])
     Empresa = StringField('Empresa', validators=[DataRequired(), Length(max=45)])
-    
+    submit = SubmitField('Guardar Contacto')

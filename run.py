@@ -3,7 +3,8 @@ import requests, json
 from forms import miformulario, Registro, Registro_contactos
 from flask_bootstrap import Bootstrap  
 import config 
-from models import db, Usuarios, Contactos, Usuarios
+from models import db, Usuarios, Contactos
+
 
 
 app = Flask(__name__)   
@@ -17,6 +18,24 @@ db.init_app(app)
 @app.route('/', methods=['GET'])    
 def index():
     return render_template('/index.html') 
+
+#Registro usuarios
+@app.route('/registro', methods = ['GET', 'POST'])
+def registro():
+    form = Registro()
+    if form.validate_on_submit():
+        Nombre = form.Nombre.data
+        Apellido1 = form.Apellido1.data
+        Apellido2 = form.Apellido2.data
+        Correo = form.Correo.data
+        Password = form.Password.data
+
+        user = Usuarios(Nombre = Nombre, Apellido1 = Apellido1, Apellido2 = Apellido2, Correo = Correo, Password = Password)
+        user.set_Password(Password) 
+        user.save()
+
+
+    return render_template('/registro.html', form=form)
 
 #Agenda
 @app.route('/agenda', methods=['GET', 'POST'])    
@@ -39,7 +58,7 @@ def contacto():
         Correo2 = form.Correo2.data
         Empresa = form.Empresa.data
 
-        contacto_reg = Contactos(Nombre=Nombre, Apellido1=Apellido1, Apellido2=Apellido2, Telefono1=Telefono1, Telefono2=Telefono2, Correo1=Correo1, Correo2=Correo2, Empresa=Empresa)
+        contacto_reg = Contactos(Nombre = Nombre, Apellido1 = Apellido1, Apellido2 = Apellido2, Telefono1 = Telefono1, Telefono2 = Telefono2, Correo1 = Correo1, Correo2 = Correo2, Empresa = Empresa)
         contacto_reg.save()
     
     
@@ -63,8 +82,9 @@ def vehiculos():
 with app.app_context():
     db.create_all()
     db.session.commit()
-    contacto_reg = Contactos.query.all()
-    print(contacto_reg)
+    
+    users = Usuarios.query.all()
+    print(users)
 
 
 if __name__ == '__main__':

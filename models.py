@@ -49,6 +49,7 @@ class Contactos(db.Model):
         self.Correo1 = Correo1
         self.Correo2 = Correo2
         self.Empresa = Empresa
+        self.date = datetime.utcnow()
     def save(self):
         if not self.id:
             db.session.add(self)
