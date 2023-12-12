@@ -1,16 +1,16 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/nav-bar.css' ) }}">
 <nav class="navbar navbar-expand-lg ">
-    <a class="navbar-brand" href="{{ url_for('registro')}}">Ayun ALB</a>
+    <a class="navbar-brand" href="{{ url_for('index')}}">Ayun ALB</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
       <ul class="navbar-nav">
-        <li class="nav-item {% if request.endpoint=='index' %}active{% endif %}">
-          <a class="nav-link" href="{{ url_for('index')}}">Inicio <span class="sr-only">(current)</span></a>
+        <li class="nav-item {% if request.endpoint=='inicio' %}active{% endif %}">
+          <a class="nav-link" href="{{ url_for('inicio')}}">Inicio <span class="sr-only">(current)</span></a>
         </li>
-        <li class="nav-item  {% if request.endpoint=='agenda' %}active{%endif %}">
-          <a class="nav-link" href="{{ url_for('agenda')}}">Agenda</a>
+        <li class="nav-item  {% if request.endpoint=='tareas' %}active{%endif %}">
+          <a class="nav-link" href="{{ url_for('tareas')}}">Tareas</a>
         </li>
         <li class="nav-item {% if request.endpoint=='contacto' %}active{%endif %}">
           <a class="nav-link" href="{{ url_for('contacto')}}">Contacto</a>
@@ -24,7 +24,14 @@
             <a class="dropdown-item" href="{{ url_for('maquinaria')}}">Maquinaria</a>
             <a class="dropdown-item" href="{{ url_for('equipos_informaticos')}}">Equipos Informaticos</a>
           </div>
+          
+
         </li>
+        <div class="registro">
+          <div  class="container-fluid">
+            <span>Bienvenido/a {{session['Nombre']}} {{session['Apellido1']}}<a href="{{url_for('logout')}}" class="mx-3">Salir</a></span>
+          </div>
+        </div>
       </ul>
     </div>
   </nav>
