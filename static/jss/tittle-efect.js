@@ -1,4 +1,4 @@
-var words = ['Gestion de Contactos', 'Gestion de Agenda', 'Gestion de Maquinaria', 'Gestion de Equipos Informaticos', 'Gestion de Vehiculos'],
+var words = ['Gestion de Contactos', 'Gestion de Tareas', 'Inventario de Maquinaria', 'Inventario de Equipos Informaticos', 'Inventario de Vehiculos'],
     part,
     i = 0,
     offset = 0,

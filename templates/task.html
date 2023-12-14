@@ -1,11 +1,165 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TASK</title>
+{% extends "base/base.html" %}
+
+{% block title %}Tareas{% endblock %}
+
+{%block columna8 %}
+
+<title>Tareas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
 </head>
-<body>
+
+    <div class="container">
+        <div class="card mt-3 w-25 mx-auto d-block">
+            <div class="card-body d-flex">
+                <img src="{{url_for('static', filename='images/plus-solid.svg')}}" width="25" class="mx-auto d-block" data-bs-toggle="modal" data-bs-target="#nuevatarea-modal">
+               <!-- No se esta usando <img src="{{url_for('static', filename='images/user-plus-solid.svg')}}" width="25" class="mx-auto d-block" data-bs-toggle="modal" data-bs-target="#user-modal">-->
+            </div>
+        </div>
+
+        <!-- Tareas -->
+        <div class="row row-col-1 row-cols-sm-1 row-cols-md-3 row-cols-lg-4 mt-3">
+            {% for tareas in tareas %}
+                
+                <div class="col-md-3">
+                    <div class="card">
+                        
+                            <div class="card-header">
+                            
+                                {{tareas.id}}
+                            </div>
+                            <div class="card-body">
+                            
+                                {{tareas.Titulo}}
+                            </div>
+                            <div class="card-body">
+                                {{tareas.Estado}}
+                            </div>
+                            <div class="card-body">
+                                {{tareas.Descripcion}}
+                            </div>
+                            <div class="card-footer d-flex justify-content-between">
+                                {{tareas.FECHA}}
+                            </div> 
+                                <form action="/borrartarea" method="POST">
+                                    <input type="hidden" value="{{tareas.id}}" name="id">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">Eliminar</button>
+                                        <div>
+                                            
+                                                               
+                                </form>
+                                
+                            </div>
+                                
+                                    <td><button class="btn btn-primary btn-sm" id="btn-edit{{tareas.id}}" data-bs-toggle="modal" data-bs-target="#modal{{tareas.id}}">Editar</button></td>
+                                   
+                          
+                                
+                        
+                     
+                    
+
+                    <!-- Tarea Modal EDITAR-->
+                        <div class="modal fade" id="modal{{tareas.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h1 class="modal-title fs-5" id="exampleModalLabe">{{tareas.Titulo }}</h1>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                    <form action="/editartareas/{{tareas.id}}" method="post">
+                                                        <label>Título</label>
+                                                        <input type="text" class="form-control mb-3" name="Titulo" value={{tareas.Titulo}}>
+                                                        <label>Descripción</label>
+                                                        <input style="height:200px" type="text" class="form-control mb-3" rows="5" name="Descripcion" value={{tareas.Descripcion}}></textarea>
+                                                        <label>Estado</label>
+                                                        <input type="text" class="form-control mb-3" name="Estado" value={{tareas.Estado}}>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="submit" class="btn btn-primary w-100">Guardar</button>
+
+                            
+                
+                                                    </form>
+                                                
+                                                    </div>
+                                                </div>
+                                            </div>                
+                    
+                                        </div>
+                </div> 
+            
+            {% endfor %}
+        </div>
+
+    </div>
+
+
+      <!--Tarea Modal NUEVA-->
+     <div class="modal fade" id="nuevatarea-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabe">Nueva tarea</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+           <form action="/nuevatarea" method="post">
+              <label>Título</label>
+              <input type="text" class="form-control mb-3" name="Titulo">
+              <label>Descripción</label>
+              <textarea class="form-control mb-3" rows="5" name="Descripcion"></textarea>
+              <label>Estado</label>
+              <input type="text" class="form-control mb-3" name="Estado">
+              <button type="submit" class="btn btn-primary w-100">Guardar</button>
+         </form>
+          </div>
+      </div>
+      </div>
+  </div>
+ 
+  
+    <!-- AQUI NO SE USA 
+    <div class="modal fade" id="user-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">Nuevo usuario</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+             <form action="/new-user" method="post">
+                <div class="row">
+                    <div class="col-6">
+                        <label>Nombre</label>
+                        <input type="text" class="form-control mb-3" name="name">
+                    </div>
+                    <div class="col-6">
+                        <label>Apellidos</label>
+                        <input type="text" class="form-control mb-3" name="surnames">
+                    </div>
+                </div>
+                <label>Email</label>
+                <input type="email" class="form-control mb-3" name="email">
+                <label>Contraseña</label>
+                <input type="password" class="form-control mb-3" name="password">
+                <button type="submit" class="btn btn-primary w-100">Guardar</button>
+             </form>
+            </div>
+        </div>
+        </div>
+    </div>-->
     
 </body>
 </html>
+
+
+{%endblock %}
+
+
+  {% block columna4 %}
+<p>Columna</p>
+
+
+  {% endblock %}

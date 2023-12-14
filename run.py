@@ -1,11 +1,12 @@
-from flask import Flask, render_template, request, session, redirect, url_for                
-import requests, json   
+from flask import Flask, render_template, request, session, redirect, url_for              
 from forms import miformulario, Registro, Registro_contactos
 from flask_bootstrap import Bootstrap  
 import config 
 from models import db, Usuarios, Contactos
 from sqlalchemy.orm import sessionmaker
 from flask_mysqldb import MySQL
+from datetime import datetime
+
 
 app = Flask(__name__)   
 Bootstrap(app)  
@@ -67,6 +68,8 @@ def registro():
         user = Usuarios(Nombre = Nombre, Apellido1 = Apellido1, Apellido2 = Apellido2, Correo = Correo, Password = Password)
         user.set_Password(Password) 
         user.save()
+        
+
 
 
     return render_template('/registro.html', form=form)
@@ -76,7 +79,70 @@ def registro():
 #Tareas
 @app.route('/tareas', methods=['GET'])
 def tareas():
-    return render_template('/tareas.html')  
+    correo = session['Correo']
+    cur = mysql.connection.cursor()
+    cur.execute("SElECT * FROM tareas WHERE correo = %s", [correo])
+    tareas = cur.fetchall()
+
+    insertObject = []
+    columnNames = [column[0] for column in cur.description]
+    for record in tareas:
+        insertObject.append(dict(zip(columnNames, record)))
+    cur.close()    
+    return render_template('/tareas.html', tareas = insertObject)  
+
+@app.route('/nuevatarea', methods=['POST'])
+def nueva_tarea():
+    titulo = request.form['Titulo']
+    descripcion = request.form['Descripcion']
+    estado = request.form['Estado']
+    correo = session['Correo']
+    d = datetime.now()
+    diaTarea = d.strftime("%Y-%m-%d $H:%M:%S")
+
+    if titulo and descripcion and correo and estado: 
+        cur = mysql.connection.cursor()
+        sql = "INSERT INTO  tareas (Correo, Titulo, Descripcion, FECHA, Estado) VALUES (%s, %s, %s, %s, %s)"
+        data = (correo, titulo, descripcion, diaTarea, estado)
+        cur.execute(sql, data)
+        mysql.connection.commit()
+    return redirect(url_for('tareas'))
+    
+@app.route('/borrartarea', methods=['POST'])
+def borrartarea():
+    cur = mysql.connection.cursor()
+    id = request.form['id']
+    sql = "DELETE FROM tareas WHERE id = %s"
+    data = (id,)
+    cur.execute(sql, data)
+    mysql.connection.commit()
+    return redirect(url_for('tareas'))
+
+@app.route('/editartareas/<string:id>', methods=['POST'])
+def editartareas(id):
+    
+    titulo = request.form['Titulo']
+    descripcion = request.form['Descripcion']
+    estado = request.form['Estado']
+    correo = session['Correo']
+    d = datetime.now()
+    diaTarea = d.strftime("%Y-%m-%d $H:%M:%S")
+
+    if titulo and descripcion and estado: 
+        cursor = mysql.connection.cursor()
+        sql = "UPDATE tareas SET Correo = %s, Titulo = %s, Descripcion = %s, FECHA = %s, Estado = %s WHERE id = %s"
+        data = ( correo, titulo, descripcion, diaTarea, estado, id)
+        cursor.execute(sql, data)
+        mysql.connection.commit()
+    return redirect(url_for('tareas'))
+
+
+@app.route('/vuelta', methods=['GET'])
+def vuelta():
+    return render_template('/e-informaticos.html')
+   
+
+
 
 #Contacto
 @app.route('/contacto', methods=['GET', 'POST'])    
