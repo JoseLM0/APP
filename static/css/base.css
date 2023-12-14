@@ -2,8 +2,12 @@ body{
     background-image:  url('/static/images/102.jpg');
     background-repeat: no-repeat;
     background-size: 100%;
+    background-color: black;
+    margin-bottom: 0px !important;
+    
 
 }
+
 
 .capa1{
     background: rgb(1,1,3);

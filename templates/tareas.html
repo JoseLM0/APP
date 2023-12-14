@@ -24,7 +24,7 @@
             <div class="col-md-3">
                 <div class="card">
                     <div class="card-header">
-                        {{tareas.Titulo}}
+                        {{tareas.Titulo}} 
                     </div>
                     <div class="card-body">
                         {{tareas.Descripcion}}
@@ -33,13 +33,17 @@
                         {{tareas.Estado}}
                     </div>
                     <div class="card-footer d-flex justify-content-between">
-                        {{tareas.FECHA}}
+                        {{tareas.FECHA}} 
                         <form action="/borrartarea" method="POST">
                             <input type="hidden" value="{{tareas.id}}" name="id">
                             <button type="submit" class="btn btn-outline-danger btn-sm">Eliminar</button>
                         </form>                       
                     </div>
-                    <td><button class="btn btn-primary btn-sm" id="btn-edit{{tareas.id}}" data-bs-toggle="modal" data-bs-target="#modal{{tareas.id}}">Editar</button></td>
+                    <div> {{tareas.Correo}} 
+                    <td><button class="btn btn-primary btn-sm" id="btn-edit{{tareas.id}}" data-bs-toggle="modal" data-bs-target="#modal{{tareas.id}}">Editar</button>
+                    </td>
+                </div>
+
                     <div class="modal fade" id="modal{{tareas.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content">
@@ -53,17 +57,16 @@
                                     <input type="text" class="form-control mb-3" name="Titulo" value={{tareas.Titulo}}>
                                     <label>Descripción</label>
                                     <input style="height:200px" type="text" class="form-control mb-3" rows="5" name="Descripcion" value={{tareas.Descripcion}}></textarea>
-                                    <label>Estado</label>
-                                    <input type="text" class="form-control mb-3" name="Estado" value={{tareas.Estado}}>
-                                </div>
-                                <div class="modal-footer">
+                                    <label>Estado</label>  
+                                    <input type="radio" name="Estado" value="Pendiente" checked>Pendiente
+                                    <input type="radio" name="Estado" value="En tramite">En tramite
+                                    <input type="radio" name="Estado" value="Problema y/o Incidencia">Problema y/o Incidencia
+                                    <input type="radio" name="Estado" value="Finalizado">Finalizado
+                                
                                     <button type="submit" class="btn btn-primary w-100">Guardar</button>
+                                </form></div>
 
-        
-
-                                </form>
-                            
-                                </div>
+                                
                             </div>
                         </div>                
 
@@ -74,8 +77,8 @@
 
         {% endfor %}
     </div>
- <!--Tarea Modal NUEVA-->
- <div class="modal fade" id="nuevatarea-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<!--Tarea Modal NUEVA-->
+<div class="modal fade" id="nuevatarea-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
     <div class="modal-content">
         <div class="modal-header">
@@ -89,7 +92,10 @@
             <label>Descripción</label>
             <textarea class="form-control mb-3" rows="5" name="Descripcion"></textarea>
             <label>Estado</label>
-            <input type="text" class="form-control mb-3" name="Estado">
+            <input type="radio" name="Estado" value="Pendiente" checked>Pendiente
+            <input type="radio" name="Estado" value="En tramite">En tramite
+            <input type="radio" name="Estado" value="Problema y/o Incidencia">Problema y/o Incidencia
+            <input type="radio" name="Estado" value="Finalizado">Finalizado
             <button type="submit" class="btn btn-primary w-100">Guardar</button>
        </form>
         </div>

@@ -32,6 +32,9 @@
             <span>Bienvenido/a {{session['Nombre']}} {{session['Apellido1']}}<a href="{{url_for('logout')}}" class="mx-3">Salir</a></span>
           </div>
         </div>
+
+        <li class="nav-item {% if request.endpoint=='registro' %}active{%endif %}">
+          <a class="nav-link" href="{{ url_for('contacto')}}">Contacto</a>
       </ul>
     </div>
   </nav>
