@@ -32,7 +32,7 @@ def inicio():
     return render_template('/inicio.html') 
     
 
-#Login
+#Login y Logout
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -52,6 +52,13 @@ def login():
         return redirect('inicio')
     else:
         return render_template('index.html', message="Error datos incorrectos vuelva a intentarlo") 
+
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('index'))
+
 
 
 #Registro usuarios
@@ -180,11 +187,6 @@ def vehiculos():
     return render_template('/vehiculos.html')
 
 
-#SALIR
-@app.route('/logout')
-def logout():
-    session.clear()
-    return redirect(url_for(login))
 
 
 with app.app_context():
