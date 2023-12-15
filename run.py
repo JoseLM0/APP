@@ -36,16 +36,16 @@ def inicio():
 
 @app.route('/login', methods=['POST'])
 def login():
-    correo = request.form['Correo']
+    user = request.form['Usuario']
     password = request.form['Password']
 
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM usuarios WHERE Correo = %s AND Password = %s",(correo, password))
+    cur.execute("SELECT * FROM usuarios WHERE Usuario = %s AND Password = %s",(user, password))
     usuarios = cur.fetchone()
     cur.close()
 
     if  usuarios is not None:
-        session['Correo'] = correo
+        session['Usuario'] = user
         session['Nombre'] = usuarios[1]
         session['Apellido1'] = usuarios[2]
 
@@ -86,9 +86,9 @@ def registro():
 #Tareas
 @app.route('/tareas', methods=['GET'])
 def tareas():
-    correo = session['Correo']
+    user = session['Usuario']
     cur = mysql.connection.cursor()
-    cur.execute("SElECT * FROM tareas WHERE correo = %s", [correo])
+    cur.execute("SElECT * FROM tareas WHERE Usuario = %s", [user])
     tareas = cur.fetchall()
 
     insertObject = []
@@ -103,14 +103,14 @@ def nueva_tarea():
     titulo = request.form['Titulo']
     descripcion = request.form['Descripcion']
     estado = request.form['Estado']
-    correo = session['Correo']
+    user = session['Usuario']
     d = datetime.now()
     diaTarea = d.strftime("%Y-%m-%d $H:%M:%S")
 
-    if titulo and descripcion and correo and estado: 
+    if titulo and descripcion and user and estado: 
         cur = mysql.connection.cursor()
-        sql = "INSERT INTO  tareas (Correo, Titulo, Descripcion, FECHA, Estado) VALUES (%s, %s, %s, %s, %s)"
-        data = (correo, titulo, descripcion, diaTarea, estado)
+        sql = "INSERT INTO  tareas (Usuario, Titulo, Descripcion, FECHA, Estado) VALUES (%s, %s, %s, %s, %s)"
+        data = (user, titulo, descripcion, diaTarea, estado)
         cur.execute(sql, data)
         mysql.connection.commit()
     return redirect(url_for('tareas'))
@@ -131,14 +131,14 @@ def editartareas(id):
     titulo = request.form['Titulo']
     descripcion = request.form['Descripcion']
     estado = request.form['Estado']
-    correo = session['Correo']
+    user = session['Usuario']
     d = datetime.now()
     diaTarea = d.strftime("%Y-%m-%d $H:%M:%S")
 
     if titulo and descripcion and estado: 
         cursor = mysql.connection.cursor()
-        sql = "UPDATE tareas SET Correo = %s, Titulo = %s, Descripcion = %s, FECHA = %s, Estado = %s WHERE id = %s"
-        data = ( correo, titulo, descripcion, diaTarea, estado, id)
+        sql = "UPDATE tareas SET Usuario = %s, Titulo = %s, Descripcion = %s, FECHA = %s, Estado = %s WHERE id = %s"
+        data = ( user, titulo, descripcion, diaTarea, estado, id)
         cursor.execute(sql, data)
         mysql.connection.commit()
     return redirect(url_for('tareas'))
