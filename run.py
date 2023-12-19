@@ -1,11 +1,12 @@
-from flask import Flask, render_template, request, session, redirect, url_for              
-from forms import miformulario, Registro, Registro_contactos
+from flask import Flask, render_template, request, session, redirect, url_for, abort              
+from forms import Cambio_contraseña, Registro, Registro_contactos
 from flask_bootstrap import Bootstrap  
 import config 
 from models import db, Usuarios, Contactos
 from sqlalchemy.orm import sessionmaker
 from flask_mysqldb import MySQL
 from datetime import datetime
+from login import abrir_sesion
 
 
 app = Flask(__name__)   
@@ -32,10 +33,11 @@ def inicio():
     return render_template('/inicio.html') 
     
 
-#Login y Logout
+#Login y Logout. OPCIONES DE LOGIN
 
 @app.route('/login', methods=['POST'])
 def login():
+
     user = request.form['Usuario']
     password = request.form['Password']
 
@@ -46,13 +48,20 @@ def login():
 
     if  usuarios is not None:
         session['Usuario'] = user
-        session['Nombre'] = usuarios[1]
-        session['Apellido1'] = usuarios[2]
+        session['Nombre'] = usuarios[2]
+        session['Apellido1'] = usuarios[3]
+        session['Puesto'] = usuarios[7]
+        
+        if session['Puesto']==1:
+            return render_template('/tareas.html')
+        
+        elif session['Puesto']<1:
+            return render_template('/inicio.html')
 
         return redirect('inicio')
     else:
         return render_template('index.html', message="Error datos incorrectos vuelva a intentarlo") 
-
+    
 
 @app.route('/logout')
 def logout():
@@ -61,26 +70,52 @@ def logout():
 
 
 
-#Registro usuarios
+
+
+
+
+#Pestaña de Usuarios
 @app.route('/registro', methods = ['GET', 'POST'])
 def registro():
     form = Registro()
     if form.validate_on_submit():
         Nombre = form.Nombre.data
+        Usuario = form.Usuario.data
         Apellido1 = form.Apellido1.data
         Apellido2 = form.Apellido2.data
         Correo = form.Correo.data
         Password = form.Password.data
 
-        user = Usuarios(Nombre = Nombre, Apellido1 = Apellido1, Apellido2 = Apellido2, Correo = Correo, Password = Password)
+        user = Usuarios(Nombre = Nombre, Usuario = Usuario, Apellido1 = Apellido1, Apellido2 = Apellido2, Correo = Correo, Password = Password)
         user.set_Password(Password) 
         user.save()
-        
-
-
 
     return render_template('/registro.html', form=form)
 
+@app.route('/perfil/<Usuario>', methods = ['GET', 'POST'])
+def perfil(Usuario):
+    user = Usuarios.query.filter_by(Usuario=Usuario).first()
+    if user is None:
+        abort(404)
+    form = Registro(request.form, obj=user) 
+    del form.Password
+    if form.validate_on_submit():
+        form.populate_obj(user)
+        db.session.commit()
+        return redirect(url_for("inicio"))   
+    return render_template('/registro.html', form=form, perfil=True)
+
+@app.route('/cambiarcontraseña/<Usuario>', methods =['GET', 'POST'])
+def cambiarcontraseña(Usuario):
+    user = Usuarios.query.filter_by(Usuario=Usuario).first()
+    if user is None:
+        abort(404)
+    form = Cambio_contraseña()
+    if form.validate_on_submit():
+        form.populate_obj(user)
+        db.session.commit()
+        return redirect(url_for("inicio"))
+    return render_template("/cambiarcontraseña.html", form = form)
 
    
 #Tareas

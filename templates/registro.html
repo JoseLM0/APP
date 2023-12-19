@@ -6,9 +6,14 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/contacto.css' ) }}">
   <div class = "capa" role="alert">
 
-  
+    {% if not perfil %}
     <h4 class="alert-heading">Registro de Usuarios</h4>
-    <p>Lista de Usuarios</p>
+    <p>Datos del Usuarios</p>
+    {% else %}
+    <h4>Perfil de {{session["Usuario"]}}</h4> 
+
+    <p>Datos del Usuarios - Sobreescribalos para editar</p>
+    {% endif %}
      <!--BOOTSTRAP CSS --> 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
   

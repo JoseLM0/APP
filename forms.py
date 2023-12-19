@@ -12,6 +12,7 @@ class miformulario(FlaskForm):
 
 #Registro USUARIOS
 class Registro (FlaskForm):
+    Usuario = StringField('Usuario', validators=[DataRequired(), Length(max=45)])
     Nombre = StringField('Nombre', validators=[DataRequired(), Length(max=45)])
     Apellido1 = StringField('Primer Apellido', validators=[DataRequired(), Length(max=45)])
     Apellido2 = StringField('Segundo Apellido', validators=[DataRequired(), Length(max=45)])
@@ -30,3 +31,9 @@ class Registro_contactos(FlaskForm):
     Correo2 = StringField('Correo 2º', validators=[DataRequired(), Email()])
     Empresa = StringField('Empresa', validators=[DataRequired(), Length(max=45)])
     submit = SubmitField('Guardar Contacto')
+
+
+#Cambio contraseña
+class Cambio_contraseña(FlaskForm):
+    Password = PasswordField('Password', validators=[DataRequired()])
+    submit = SubmitField('Guardar')

@@ -24,17 +24,35 @@
             <a class="dropdown-item" href="{{ url_for('maquinaria')}}">Maquinaria</a>
             <a class="dropdown-item" href="{{ url_for('equipos_informaticos')}}">Equipos Informaticos</a>
           </div>
-          
-
-        </li>
+        </li> 
+        {% if session ["Usuario"] %}
         <div class="registro">
-          <div  class="container-fluid">
-            <span>Bienvenido/a {{session['Nombre']}} {{session['Apellido1']}}<a href="{{url_for('logout')}}" class="mx-3">Salir</a></span>
-          </div>
-        </div>
+          <h3>Bienvenido Usuario {{ session ["Usuario"]}} 
 
-        <li class="nav-item {% if request.endpoint=='registro' %}active{%endif %}">
-          <a class="nav-link" href="{{ url_for('contacto')}}">Contacto</a>
+          </h3>
+
+        </div>
+        <li class="nav-item dropdown ">
+          
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Perfil
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+            <a class="dropdown-item" href="/perfil/{{session["Usuario"]}}">Perfil de {{ session["Usuario"]}}</a>
+            <a class="dropdown-item" href="/registro"> Nuevo Usuario</button></a>
+            <a class="dropdown-item" href="/cambiarcontraseña/{{session["Usuario"]}}">Cambiar contraseña de {{ session["Usuario"]}}</a>
+            <a class="dropdown-item" href="/logout"> Salir sesion</button></a>
+            
+            
+          </div>
+          
+          
+        </li> 
+        {% else %}  
+        <div class="registro">
+          <a class="nav-link" href="{{ url_for('index')}}"><button class="btn btn-primary w-100">Identificarse</button></a>
+          </div>
+          {%endif%}
       </ul>
     </div>
   </nav>

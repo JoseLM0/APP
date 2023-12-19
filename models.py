@@ -8,15 +8,16 @@ db = SQLAlchemy()
 class Usuarios(db.Model, UserMixin):
     __tablename__ = "Usuarios"
     id = db.Column(db.Integer, primary_key = True)
+    Usuario = db.Column(db.String(50), nullable= False)
     Nombre = db.Column(db.String(45), nullable= False)
     Apellido1 = db.Column(db.String(45), nullable= False)
     Apellido2 = db.Column(db.String(45), nullable= False)
     Correo = db.Column(db.String(45), nullable= False)
     Password = db.Column(db.String(250), nullable= False)
-    Puesto = db.Column(db.Integer, nullable = False, default = 0)
+    Puesto = db.Column(db.Integer, nullable = False, default = 5)
 
     def __repr__(self):
-        return f'<Usuario {self.Correo}>'
+        return f'<Usuario {self.Usuario}>'
     
     def set_Password(self, Password):
         self.Password = generate_password_hash(Password)
