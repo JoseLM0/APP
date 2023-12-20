@@ -32,7 +32,11 @@ class Registro_contactos(FlaskForm):
     Empresa = StringField('Empresa', validators=[DataRequired(), Length(max=45)])
     submit = SubmitField('Guardar Contacto')
 
-
+#Form Login
+class Login_form(FlaskForm):
+    Usuario = StringField(label = 'Usuario', validators=[DataRequired()])   
+    Password = PasswordField(label = 'Contraseña', validators=[DataRequired()])
+    submit = SubmitField('Entrar')
 #Cambio contraseña
 class Cambio_contraseña(FlaskForm):
     Password = PasswordField('Password', validators=[DataRequired()])

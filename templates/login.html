@@ -1,45 +1,67 @@
-{% extends "base/base.html" %}
+<!-- Define que el documento esta bajo el estandar de HTML 5 -->
+<!doctype html>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/login.css' ) }}">
+<!-- Representa la raíz de un documento HTML o XHTML. Todos los demás elementos deben ser descendientes de este elemento. -->
 
-{% block title %}Login{% endblock %}
-
-{%block columna8 %}
-
-<br>
-<div class="alert alert-success" role="alert">
-    <h4 class="alert-heading">Tareas</h4>
-    <p>Lista de Tareas</p>
-    <hr>
-        <div class = login>
-            <form action="/login" method="post">
-
-                <h5 class "text-center">Inicio</h5>
-
-                <label>Usuario</label>
-                <input type="usuario" class="form-control mb-3" name = "Usuario">
-
-                <label>Contraseña</label>
-                <input type="password" class="form-control mb-3" name = "Password">
-                <button type="submit" class="btn-primary w-100">Aceceder</button>
-
-                {% if message %}
-
-                  <div class="alert alert-danger alert-dimissible fade show" role="alert">
-                      <strong>Error</strong>{{ message }}
-                      <button type="button" class="btn-close" data-bs-dissmiss="alert" aria-label="Close"></button>
-                  </div>
-
-                {% endif %}
-            </form>
+<html lang="es">
+  
+    
+    <head>
+        
+        <meta charset="utf-8">
+        
+        <title> Formulario de Acceso </title>    
+        
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <meta name="author" content="Videojuegos & Desarrollo">
+        <meta name="description" content="Ejemplo de formulario de acceso basado en HTML5 y CSS">
+        <meta name="keywords" content="login,formulariode acceso html">
+        
+        <link href="https://fonts.googleapis.com/css?family=Nunito&display=swap" rel="stylesheet"> 
+        
+        <!-- Link hacia el archivo de estilos css -->
+        <link rel="stylesheet" href="css/login.css">
+        
+        <style type="text/css">
+            
+        </style>
+        
+        <script type="text/javascript">
+        
+        </script>
+        
+    </head>
+    
+    <body>
+        {% block contenido %}    
+        <div id="contenedor">
+            
+            <div id="contenedorcentrado">
+                <div id="login" class = login>
+                    <form id="loginform" action="/login" method="post">
+                      {% import "bootstrap/wtf.html" as wtf %}
+                      {{ form.csrf_token() }}
+                      {{ wtf.quick_form(form) }}
+                  
+                    </form>
+                    
+                </div>
+                <div id="derecho">
+                    <div class="titulo">
+                        Bienvenido
+                    </div>
+                    <hr>
+                    <div class="pie-form">
+                        <h3>Ingresa tu usuario y contraseña</h3>
+                        <a href="#">¿Olvidaste tu contraseña?</a>
+                        
+                        <hr>
+                        
+                    </div>
+                </div>
+            </div>
         </div>
-    <p class="mb-0">En prueba</p>
-  </div>
-
-
-{%endblock %}
-
-
-  {% block columna4 %}
-<p>Columna</p>
-
-
-  {% endblock %}
+        {% endblock %} 
+    </body>
+</html>

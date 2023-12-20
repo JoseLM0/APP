@@ -13,17 +13,22 @@ class Usuarios(db.Model, UserMixin):
     Apellido1 = db.Column(db.String(45), nullable= False)
     Apellido2 = db.Column(db.String(45), nullable= False)
     Correo = db.Column(db.String(45), nullable= False)
-    Password = db.Column(db.String(250), nullable= False)
+    password_hash = db.Column(db.String(250), nullable= False)
     Puesto = db.Column(db.Integer, nullable = False, default = 5)
 
     def __repr__(self):
-        return f'<Usuario {self.Usuario}>'
+        return (u'<{self.__class__.__name__}: {self.id}>'.format(self=self))
+    @property
+    def Password(self):
+        raise AttributeError('password is not a readable atribute')
     
-    def set_Password(self, Password):
-        self.Password = generate_password_hash(Password)
+    @Password.setter
+    def Password(self, Password):
+        self.password_hash = generate_password_hash(Password)
 
-    def check_password(self, password):
-        return check_password_hash(self.Password, password) 
+    def verify_password(self, Password):
+        return check_password_hash(self.password_hash, Password)
+    
     def save(self):
         if not self.id:
             db.session.add(self)

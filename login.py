@@ -1,15 +1,11 @@
 from flask import Flask, render_template, request, session, redirect, url_for 
 from run import app    
 
-def abrir_sesion(Usuarios):
-    session["id"]=Usuarios.id
-    session["Usuario"]=Usuarios.Usuario
-    session["Puesto"]=Usuarios.Puesto
+def abrir_sesion(user):
+    session['id'] = user.id
+    session['Usuario'] = user.Usuario
+    session['Puesto'] = user.Puesto
 
-def cerrar_sesion (Usuarios):
-    session.pop("id", None)    
-    session.pop("username", None) 
-    session.pop("Puesto", None) 
 
 def estalogueado():
     if "id" in session:
@@ -18,7 +14,7 @@ def estalogueado():
         return False
 
 def es_admin():
-    return session.get("1", False)        
+    return session.get("Puesto", False)        
 
 @app.context_processor
 def logear():

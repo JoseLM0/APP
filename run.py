@@ -1,11 +1,12 @@
 from flask import Flask, render_template, request, session, redirect, url_for, abort              
-from forms import Cambio_contraseña, Registro, Registro_contactos
+from forms import Cambio_contraseña, Registro, Registro_contactos, Login_form
 from flask_bootstrap import Bootstrap  
 import config 
 from models import db, Usuarios, Contactos
 from sqlalchemy.orm import sessionmaker
 from flask_mysqldb import MySQL
 from datetime import datetime
+from werkzeug.utils import secure_filename
 
 
 
@@ -35,61 +36,43 @@ def inicio():
 
 #Login y Logout. OPCIONES DE LOGIN
 
-@app.route('/login', methods=['POST'])
+@app.route('/login', methods=['GET','POST'])
 def login():
-
-    user = request.form['Usuario']
-    password = request.form['Password']
-
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM usuarios WHERE Usuario = %s AND Password = %s",(user, password))
-    usuarios = cur.fetchone()
-    cur.close()
-
-    if  usuarios is not None:
-        session['Usuario'] = user
-        session['Nombre'] = usuarios[2]
-        session['Apellido1'] = usuarios[3]
-        session['Puesto'] = usuarios[7]
-        
-        if session['Puesto']==1:
-            return render_template('/tareas.html')
-        
-        elif session['Puesto']<1:
-            return render_template('/inicio.html')
-
-        return redirect('inicio')
-    else:
-        return render_template('index.html', message="Error datos incorrectos vuelva a intentarlo") 
+    from login import abrir_sesion, estalogueado
+    if estalogueado():
+        return render_template('inicio')
+    form = Login_form()
+    if form.validate_on_submit():
+        user = Usuarios.query.filter_by(Usuario = form.Usuario.data).first()
+        if user is not None and user.verify_password(form.Password.data):
+            abrir_sesion(user)      
+            return redirect('inicio')
+        form.Usuario.errors.append("Usuario o contraseña incorrecta")
+    return render_template('login.html', form=form ) 
     
 
 @app.route('/logout')
 def logout():
     session.clear()
-    return redirect(url_for('index'))
-
-
-
-
-
+    return redirect(url_for('login'))
 
 
 #Pestaña de Usuarios
 @app.route('/registro', methods = ['GET', 'POST'])
 def registro():
+    from login import estalogueado
+    if estalogueado():
+        return redirect(url_for("inicio"))
     form = Registro()
     if form.validate_on_submit():
-        Nombre = form.Nombre.data
-        Usuario = form.Usuario.data
-        Apellido1 = form.Apellido1.data
-        Apellido2 = form.Apellido2.data
-        Correo = form.Correo.data
-        Password = form.Password.data
-
-        user = Usuarios(Nombre = Nombre, Usuario = Usuario, Apellido1 = Apellido1, Apellido2 = Apellido2, Correo = Correo, Password = Password)
-        user.set_Password(Password) 
-        user.save()
-
+        existe_usuario = Usuarios.query.filter_by(Usuario=form.Usuario.data).first()
+        if existe_usuario is None:
+            user = Usuarios()
+            form.populate_obj(user)
+            db.session.add(user)
+            db.session.commit()
+            return redirect(url_for("inicio"))
+        form.username.errors.append("Nombre de usuario ya existente")
     return render_template('/registro.html', form=form)
 
 @app.route('/perfil/<Usuario>', methods = ['GET', 'POST'])
