@@ -6,7 +6,7 @@ from models import db, Usuarios, Contactos
 from sqlalchemy.orm import sessionmaker
 from flask_mysqldb import MySQL
 from datetime import datetime
-from login import abrir_sesion
+
 
 
 app = Flask(__name__)   
@@ -116,6 +116,59 @@ def cambiarcontraseña(Usuario):
         db.session.commit()
         return redirect(url_for("inicio"))
     return render_template("/cambiarcontraseña.html", form = form)
+
+#ADMINISTRAR de personal
+
+@app.route('/listadepersonal', methods=['GET', 'POST'])
+def listadepersonal():
+    cursor = mysql.connection.cursor()
+    cursor.execute("SELECT * FROM usuarios")
+    personal = cursor.fetchall()
+    #Convertir a diccionario
+    insertObject = []
+    columnNames = [column[0] for column in cursor.description]
+    for record in personal:
+        insertObject.append(dict(zip(columnNames, record)))
+        cursor.close()
+
+    return render_template("/personal.html", personal = insertObject)
+
+@app.route('/borrarpersonal', methods=['POST'])
+def borrarpersonal():
+    from login import es_admin
+    #control permiso
+    if not es_admin():
+        abort(404)
+    cur = mysql.connection.cursor()
+    id = request.form['id']
+    sql = "DELETE FROM usuarios WHERE id = %s"
+    data = (id,)
+    cur.execute(sql, data)
+    mysql.connection.commit()
+    return redirect(url_for('listadepersonal'))
+
+@app.route('/editarpersonal/<string:id>', methods=['POST'])
+def editarpersonal(id):
+    from login import es_admin # control de permiso
+    if not es_admin():
+        abort(404)
+    usuario = request.form['Usuario']
+    nombre = request.form['Nombre']
+    apellido1 = request.form['Apellido1']
+    apellido2 = request.form['Apellido2']
+    correo = request.form['Correo']
+    password = request.form['Password']
+    puesto = request.form['Puesto'] 
+    
+    if usuario and nombre and apellido1 and apellido2 and correo and password and puesto: 
+        cursor = mysql.connection.cursor()
+        sql = "UPDATE usuarios SET Usuario = %s, Nombre = %s, Apellido1 = %s, Apellido2 = %s, Correo = %s, Password = %s, Puesto = %s WHERE id = %s"
+        data = ( usuario, nombre, apellido1, apellido2, correo, password, puesto, id)
+        cursor.execute(sql, data)
+        mysql.connection.commit()
+    return redirect(url_for('listadepersonal'))
+
+
 
    
 #Tareas

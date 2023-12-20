@@ -18,7 +18,7 @@ def estalogueado():
         return False
 
 def es_admin():
-    return session.get("1",False)        
+    return session.get("1", False)        
 
 @app.context_processor
 def logear():
