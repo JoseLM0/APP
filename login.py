@@ -14,7 +14,7 @@ def estalogueado():
         return False
 
 def es_admin():
-    return session.get("Puesto", False)        
+    return session.get("Puesto", 1)        
 
 @app.context_processor
 def logear():
@@ -25,4 +25,4 @@ def logear():
 
 @app.context_processor
 def admin():
-    return {'es_admin':session.get("1", False)}     
+    return {'es_admin':session.get("Puesto", 1)}     

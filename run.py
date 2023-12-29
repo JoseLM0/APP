@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, session, redirect, url_for, abort              
-from forms import Cambio_contraseña, Registro, Registro_contactos, Login_form
+from forms import Cambio_contraseña, Registro, Registro_contactos, Login_form, Buscador
 from flask_bootstrap import Bootstrap  
 import config 
 from models import db, Usuarios, Contactos
@@ -7,6 +7,7 @@ from sqlalchemy.orm import sessionmaker
 from flask_mysqldb import MySQL
 from datetime import datetime
 from werkzeug.utils import secure_filename
+
 
 
 
@@ -60,9 +61,10 @@ def logout():
 #Pestaña de Usuarios
 @app.route('/registro', methods = ['GET', 'POST'])
 def registro():
-    from login import estalogueado
-    if estalogueado():
-        return redirect(url_for("inicio"))
+    #from login import es_admin
+    #control permiso
+    #if not es_admin():
+        #abort(404)
     form = Registro()
     if form.validate_on_submit():
         existe_usuario = Usuarios.query.filter_by(Usuario=form.Usuario.data).first()
@@ -102,8 +104,9 @@ def cambiarcontraseña(Usuario):
 
 #ADMINISTRAR de personal
 
+
 @app.route('/listadepersonal', methods=['GET', 'POST'])
-def listadepersonal():
+def personal():
     cursor = mysql.connection.cursor()
     cursor.execute("SELECT * FROM usuarios")
     personal = cursor.fetchall()
@@ -130,44 +133,60 @@ def borrarpersonal():
     mysql.connection.commit()
     return redirect(url_for('listadepersonal'))
 
-@app.route('/editarpersonal/<string:id>', methods=['POST'])
+@app.route('/editarpersonal/<string:id>', methods = ['GET', 'POST'])
 def editarpersonal(id):
-    from login import es_admin # control de permiso
-    if not es_admin():
+    user = Usuarios.query.filter_by(id=id).first()
+    if user is None:
         abort(404)
-    usuario = request.form['Usuario']
-    nombre = request.form['Nombre']
-    apellido1 = request.form['Apellido1']
-    apellido2 = request.form['Apellido2']
-    correo = request.form['Correo']
-    password = request.form['Password']
-    puesto = request.form['Puesto'] 
-    
-    if usuario and nombre and apellido1 and apellido2 and correo and password and puesto: 
-        cursor = mysql.connection.cursor()
-        sql = "UPDATE usuarios SET Usuario = %s, Nombre = %s, Apellido1 = %s, Apellido2 = %s, Correo = %s, Password = %s, Puesto = %s WHERE id = %s"
-        data = ( usuario, nombre, apellido1, apellido2, correo, password, puesto, id)
-        cursor.execute(sql, data)
-        mysql.connection.commit()
-    return redirect(url_for('listadepersonal'))
+    form = Registro(request.form, obj=user) 
+    del form.Password
+    if form.validate_on_submit():
+        form.populate_obj(user)
+        db.session.commit()
+        return redirect(url_for("personal"))   
+    return render_template('/editarpersonal.html', form=form, perfil=True)
 
+@app.route('/editarcontraseña/<string:id>', methods =['GET', 'POST'])
+def editarcontraseña(id):
+    user = Usuarios.query.filter_by(id=id).first()
+    if user is None:
+        abort(404)
+    form = Cambio_contraseña()
+    if form.validate_on_submit():
+        form.populate_obj(user)
+        db.session.commit()
+        return redirect(url_for("personal"))
+    return render_template("/editarcontraseña.html", form = form, perfil=True)
 
 
    
 #Tareas
-@app.route('/tareas', methods=['GET'])
+@app.route('/tareas', methods=['GET', 'POST'])
 def tareas():
-    user = session['Usuario']
+    puesto = session['Puesto']
     cur = mysql.connection.cursor()
-    cur.execute("SElECT * FROM tareas WHERE Usuario = %s", [user])
+    cur.execute("SElECT * FROM tareas WHERE id_puesto >= %s", [puesto])
     tareas = cur.fetchall()
 
     insertObject = []
     columnNames = [column[0] for column in cur.description]
     for record in tareas:
         insertObject.append(dict(zip(columnNames, record)))
-    cur.close()    
+    cur.close()
+    if request.method == "POST":
+        search   = request.form["buscar"]
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT * FROM tareas WHERE Descripcion LIKE %s ORDER BY id  DESC", [search])
+        tareas = cur.fetchall()
+        insertObject = []
+        columnNames = [column[0] for column in cur.description]
+        for record in tareas:
+            insertObject.append(dict(zip(columnNames, record)))
+        cur.close()    
+        return render_template('/buscartarea.html', tareas = insertObject, busqueda = search )   
     return render_template('/tareas.html', tareas = insertObject)  
+
+ 
 
 @app.route('/nuevatarea', methods=['POST'])
 def nueva_tarea():
@@ -175,13 +194,14 @@ def nueva_tarea():
     descripcion = request.form['Descripcion']
     estado = request.form['Estado']
     user = session['Usuario']
+    puesto = session['Puesto']
     d = datetime.now()
     diaTarea = d.strftime("%Y-%m-%d $H:%M:%S")
 
     if titulo and descripcion and user and estado: 
         cur = mysql.connection.cursor()
-        sql = "INSERT INTO  tareas (Usuario, Titulo, Descripcion, FECHA, Estado) VALUES (%s, %s, %s, %s, %s)"
-        data = (user, titulo, descripcion, diaTarea, estado)
+        sql = "INSERT INTO  tareas (Usuario, id_puesto, Titulo, Descripcion, FECHA, Estado) VALUES (%s, %s, %s, %s, %s, %s)"
+        data = (user, puesto, titulo, descripcion, diaTarea, estado)
         cur.execute(sql, data)
         mysql.connection.commit()
     return redirect(url_for('tareas'))
@@ -202,14 +222,13 @@ def editartareas(id):
     titulo = request.form['Titulo']
     descripcion = request.form['Descripcion']
     estado = request.form['Estado']
-    user = session['Usuario']
     d = datetime.now()
     diaTarea = d.strftime("%Y-%m-%d $H:%M:%S")
 
     if titulo and descripcion and estado: 
         cursor = mysql.connection.cursor()
-        sql = "UPDATE tareas SET Usuario = %s, Titulo = %s, Descripcion = %s, FECHA = %s, Estado = %s WHERE id = %s"
-        data = ( user, titulo, descripcion, diaTarea, estado, id)
+        sql = "UPDATE tareas SET Titulo = %s, Descripcion = %s, FECHA = %s, Estado = %s WHERE id = %s"
+        data = (titulo, descripcion, diaTarea, estado, id)
         cursor.execute(sql, data)
         mysql.connection.commit()
     return redirect(url_for('tareas'))

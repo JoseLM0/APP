@@ -9,12 +9,12 @@
         <li class="nav-item {% if request.endpoint=='inicio' %}active{% endif %}">
           <a class="nav-link" href="{{ url_for('inicio')}}">Inicio <span class="sr-only">(current)</span></a>
         </li>
+        
         <li class="nav-item  {% if request.endpoint=='tareas' %}active{%endif %}">
           <a class="nav-link" href="{{ url_for('tareas')}}">Tareas</a>
         </li>
         <li class="nav-item {% if request.endpoint=='contacto' %}active{%endif %}">
           <a class="nav-link" href="{{ url_for('contacto')}}">Contacto</a>
-
           
 
 
@@ -29,6 +29,7 @@
             <a class="dropdown-item" href="{{ url_for('equipos_informaticos')}}">Equipos Informaticos</a>
           </div>
         </li> 
+        
         {% if session ["Usuario"] %}
         <div class="registro">
           <h3>Bienvenido Usuario {{ session ["Usuario"]}} 
@@ -43,8 +44,12 @@
           </a>
           <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
             <a class="dropdown-item" href="/perfil/{{session["Usuario"]}}">Perfil de {{ session["Usuario"]}}</a>
+            
             <a class="dropdown-item" href="/registro"> Nuevo Usuario</button></a>
-            <a class="dropdown-item" href="{{ url_for('listadepersonal')}}"> Lista de Personal</button></a>
+            
+            
+            <a class="dropdown-item" href="{{ url_for('personal')}}"> Lista de Personal</button></a>
+           
             <a class="dropdown-item" href="/cambiarcontraseña/{{session["Usuario"]}}">Cambiar contraseña de {{ session["Usuario"]}}</a>
             <a class="dropdown-item" href="/logout"> Salir sesion</button></a>
             

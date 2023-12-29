@@ -1,3 +1,4 @@
+
 #conexion a la base de datos
 SQLALCHEMY_DATABASE_URI='mysql+pymysql://root:#2023_Root_#@localhost/db_ayun'
 SQLALCHEMY_TRACK_MODIFICATIONS = False

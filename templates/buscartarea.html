@@ -1,0 +1,85 @@
+{% extends "/tareas.html" %}
+
+{% block title %}Resultado{% endblock %}
+
+{%block columna8 %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/contacto.css' ) }}">
+<div class="capa1">
+    <div class="row row-col-1 row-cols-sm-4 row-cols-md-3 row-cols-lg-4 mt-3">
+        {% if (tareas) %} 
+        {% for tareas in tareas %}
+
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-header">
+                       Titulo: {{tareas.Titulo}} 
+                    </div>
+                    <div class="card-body">
+                       Descripcion: {{tareas.Descripcion}}
+                    </div>
+                    <div class="card-footer d-flex justify-content-between">
+                       Estado: {{tareas.Estado}}
+                    </div>
+                    <div class="card-footer d-flex justify-content-between">
+                        {{tareas.FECHA}} 
+                        <form action="/borrartarea" method="POST">
+                            <input type="hidden" value="{{tareas.id}}" name="id">
+                            <button type="submit" class="btn btn-outline-danger btn-sm">Eliminar</button>
+                        </form>                       
+                    </div>
+                    <div> Creado por: {{ tareas.Usuario}} 
+                    <td><button class="btn btn-primary btn-sm" id="btn-edit{{tareas.id}}" data-bs-toggle="modal" data-bs-target="#modal{{tareas.id}}">Editar</button>
+                    </td>
+                </div>
+
+                    <div class="modal fade" id="modal{{tareas.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="exampleModalLabe">{{tareas.Titulo}}</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                <form action="/editartareas/{{tareas.id}}" method="post">
+                                    <label>Título</label>
+                                    <input type="text" class="form-control mb-3" name="Titulo" value="{{tareas.Titulo}}">
+                                    <label>Descripción</label>
+                                    <input style="height:200px" type="text" class="form-control mb-3" rows="5" name="Descripcion" value="{{tareas.Descripcion}}"></textarea>
+                                    <label>Estado</label>  
+                                    <input type="radio" name="Estado" value="Pendiente" checked>Pendiente
+                                    <input type="radio" name="Estado" value="En tramite">En tramite
+                                    <input type="radio" name="Estado" value="Problema y/o Incidencia">Problema y/o Incidencia
+                                    <input type="radio" name="Estado" value="Finalizado">Finalizado
+                                
+                                    <button type="submit" class="btn btn-primary w-100">Guardar</button>
+                                </form></div>
+
+                                
+                            </div>
+                        </div>                
+
+                    </div>
+
+                </div>
+            </div>
+
+        {% endfor %}
+       
+    </div>
+</div>
+            {% else %}
+
+            <link rel="stylesheet" href="{{ url_for('static', filename='css/contacto.css' ) }}">
+            <div class="capa1">
+                <div div class="container" nombre="capa1">
+                    <h3>No hay resultados para la busqueda:
+                    <strong class="busq colorCrimson"> {{ busqueda }}</strong>
+                    </h3>
+                </div>
+            </div>
+            {% endif %}
+
+
+    {%endblock %} 
+

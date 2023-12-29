@@ -15,6 +15,8 @@ class Usuarios(db.Model, UserMixin):
     Correo = db.Column(db.String(45), nullable= False)
     password_hash = db.Column(db.String(250), nullable= False)
     Puesto = db.Column(db.Integer, nullable = False, default = 5)
+    NCuenta = db.Column(db.String(30), nullable = True )
+    Comentarios = db.Column(db.String(250), nullable = True )
 
     def __repr__(self):
         return (u'<{self.__class__.__name__}: {self.id}>'.format(self=self))

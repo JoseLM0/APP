@@ -18,6 +18,9 @@ class Registro (FlaskForm):
     Apellido2 = StringField('Segundo Apellido', validators=[DataRequired(), Length(max=45)])
     Correo = StringField('Correo', validators=[DataRequired(), Email()])
     Password = PasswordField('Contraseña', validators=[DataRequired()])
+    Puesto = RadioField('Nª Puesto', choices=[('1','ADMIN'), ('2','ALCALDE'), ('3','CONCEJALES'), ('4','ADMINISTRATIVOS'), ('5','USUARIO')], validators=[DataRequired()])
+    NCuenta = StringField('Numero de Cuenta', validators=[DataRequired(), Length(max=30)])
+    Comentarios = StringField('Comentarios', validators=[DataRequired(), Length(max=250)])
     submit = SubmitField('Guardar Registro')
 
 #Registro Contactos    
@@ -39,5 +42,10 @@ class Login_form(FlaskForm):
     submit = SubmitField('Entrar')
 #Cambio contraseña
 class Cambio_contraseña(FlaskForm):
-    Password = PasswordField('Password', validators=[DataRequired()])
+    Password = PasswordField('Contraseña', validators=[DataRequired()])
     submit = SubmitField('Guardar')
+
+# Buscador    
+class Buscador(FlaskForm):
+    busqueda = StringField("Descripcion", validators=[DataRequired()])  
+    submit = SubmitField('Entrar')
