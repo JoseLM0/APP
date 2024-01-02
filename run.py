@@ -1,8 +1,9 @@
 from flask import Flask, render_template, request, session, redirect, url_for, abort              
 from forms import Cambio_contraseña, Registro, Registro_contactos, Login_form, Buscador
+from flask_sqlalchemy import SQLAlchemy
 from flask_bootstrap import Bootstrap  
 import config 
-from models import db, Usuarios, Contactos
+from models import db, Usuarios, Contactos, Tareas
 from sqlalchemy.orm import sessionmaker
 from flask_mysqldb import MySQL
 from datetime import datetime
@@ -106,7 +107,7 @@ def cambiarcontraseña(Usuario):
 
 
 @app.route('/listadepersonal', methods=['GET', 'POST'])
-def personal():
+def personal(): 
     cursor = mysql.connection.cursor()
     cursor.execute("SELECT * FROM usuarios")
     personal = cursor.fetchall()
@@ -116,8 +117,14 @@ def personal():
     for record in personal:
         insertObject.append(dict(zip(columnNames, record)))
         cursor.close()
-
-    return render_template("/personal.html", personal = insertObject)
+    form = Buscador()    
+    buscado = Usuarios.query 
+    if form.validate_on_submit():
+        busqueda = form.busqueda.data
+        buscado = buscado.filter(Usuarios.Nombre.like('%' + busqueda + '%'))
+        buscado = buscado.order_by(Usuarios.Nombre).all()
+        return render_template('/buscarpersonal.html', form=form, busqueda = busqueda, buscado = buscado)
+    return render_template("/personal.html", personal = insertObject, form = form)
 
 @app.route('/borrarpersonal', methods=['POST'])
 def borrarpersonal():
@@ -167,26 +174,22 @@ def tareas():
     cur = mysql.connection.cursor()
     cur.execute("SElECT * FROM tareas WHERE id_puesto >= %s", [puesto])
     tareas = cur.fetchall()
-
     insertObject = []
     columnNames = [column[0] for column in cur.description]
     for record in tareas:
         insertObject.append(dict(zip(columnNames, record)))
     cur.close()
-    if request.method == "POST":
-        search   = request.form["buscar"]
-        cur = mysql.connection.cursor()
-        cur.execute("SELECT * FROM tareas WHERE Descripcion LIKE %s ORDER BY id  DESC", [search])
-        tareas = cur.fetchall()
-        insertObject = []
-        columnNames = [column[0] for column in cur.description]
-        for record in tareas:
-            insertObject.append(dict(zip(columnNames, record)))
-        cur.close()    
-        return render_template('/buscartarea.html', tareas = insertObject, busqueda = search )   
-    return render_template('/tareas.html', tareas = insertObject)  
+    form = Buscador()    
+    tareas = Tareas.query 
+    if form.validate_on_submit():
+        busqueda = form.busqueda.data
+        tareas = tareas.filter(Tareas.Descripcion.like('%' + busqueda + '%'))
+        tareas = tareas.order_by(Tareas.Titulo).all()
+        return render_template('/buscartarea.html', form=form, busqueda = busqueda, tareas = tareas)
+    return render_template('/tareas.html', tareas = insertObject, form=form)  
 
- 
+
+
 
 @app.route('/nuevatarea', methods=['POST'])
 def nueva_tarea():
@@ -242,24 +245,45 @@ def vuelta():
 
 
 #Contacto
-@app.route('/contacto', methods=['GET', 'POST'])    
-def contacto():
-    form = Registro_contactos()
-    if form.validate_on_submit():
-        Nombre = form.Nombre.data
-        Apellido1 = form.Apellido1.data
-        Apellido2 = form.Apellido2.data
-        Telefono1 = form.Telefono1.data
-        Telefono2 = form.Telefono2.data
-        Correo1 = form.Correo1.data
-        Correo2 = form.Correo2.data
-        Empresa = form.Empresa.data
 
-        contacto_reg = Contactos(Nombre = Nombre, Apellido1 = Apellido1, Apellido2 = Apellido2, Telefono1 = Telefono1, Telefono2 = Telefono2, Correo1 = Correo1, Correo2 = Correo2, Empresa = Empresa)
-        contacto_reg.save()
-    
-    
-    return render_template('contacto.html', form=form)
+@app.route('/listadecontactos', methods=['GET', 'POST'])
+def contactos(): 
+    cursor = mysql.connection.cursor()
+    cursor.execute("SELECT * FROM contactos")
+    personal = cursor.fetchall()
+    #Convertir a diccionario
+    insertObject = []
+    columnNames = [column[0] for column in cursor.description]
+    for record in personal:
+        insertObject.append(dict(zip(columnNames, record)))
+        cursor.close()
+    form = Buscador()    
+    buscado = Contactos.query 
+    if form.validate_on_submit():
+        busqueda = form.busqueda.data
+        buscado = buscado.filter(Contactos.Nombre.like('%' + busqueda + '%'))
+        buscado = buscado.order_by(Contactos.Nombre).all()
+        return render_template('/buscarcontactos.html', form=form, busqueda = busqueda, buscado = buscado)
+    return render_template("/contactos.html", personal = insertObject, form = form)
+
+@app.route('/nuevocontacto', methods=['GET', 'POST'])    
+def nuevocontacto():
+    form = Registro_contactos()
+    user = Contactos.query.filter_by(id=id).first()
+    if user is None:
+        abort(404)
+    if form.validate_on_submit():
+        user = Contactos()
+        form.populate_obj(user)
+        db.session.add(user)
+        db.session.commit()
+        return redirect(url_for("contactos"))
+
+    return render_template('nuevocontacto.html', form=form, perfil=True)
+
+
+@app.route('/registro', methods = ['GET', 'POST'])
+
 
 #EQUIPOS INFORMATICOS
 @app.route('/equipos_informaticos', methods=['GET'])

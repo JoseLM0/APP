@@ -20,16 +20,12 @@
             
     </div>
 </div>
-<div class="container" nombre="capa1"></div>
+<div class="w3-container w3-teal" nombre="capa1">
     <nav>
         <div class="search-bar">
-        <form name="formSearch" method="POST" action="{{ url_for('tareas') }}" class="search" autocomplete="off">
-            <input type="search" name="buscar" class="search__input" placeholder="Buscador tareas" required>
-            <button type="submit" class="search__btn">
-            <i class="bi bi-search search__icon"></i>
-            Buscar
-            </button>
-        </form>
+            {% import "bootstrap/wtf.html" as wtf %}
+            {{ form.csrf_token() }}
+            {{ wtf.quick_form(form) }}
         </div>
     </nav>
 </div>
@@ -42,13 +38,11 @@
                 <div class="col-md-3">
                     <div class="card">
                         <div class="card-header">
-                            ID: {{tareas.id}} 
-                         </div>
-                        <div class="card-header">
-                           Titulo: {{tareas.Titulo}} 
+                            Tareas Nº: {{tareas.id}}  Titulo: {{tareas.Titulo}} 
                         </div>
                         <div class="card-body">
-                           Descripcion: {{tareas.Descripcion}}
+                           Descripcion: 
+                           <br>{{tareas.Descripcion}}
                         </div>
                         <div class="card-footer d-flex justify-content-between">
                            Estado: {{tareas.Estado}}

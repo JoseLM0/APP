@@ -41,27 +41,27 @@
                 <th scope="col">Borrar</th>
             </tr>
         </thead>           
-      {% for personal in personal %}
+      {% for buscado in buscado %}
         <tr>
-          <td>{{personal.Usuario}}</td>
-          <td>{{personal.Nombre}}</td>
-          <td>{{personal.Apellido1}}</td>
-          <td>{{personal.Apellido2}}</td>
-          <td>{{personal.Correo}}</td>
-          <td>{{personal.Puesto}}</td>
-          <td><button class="btn btn-primary btn-sm" id="btn-edit{{personal.id}}" data-bs-toggle="modal" data-bs-target="#modal{{personal.id}}">Ver</button></td>
-          <td><form action="/editarpersonal/{{personal.id}}" method="POST">
-              <input type="hidden" value="{{personal.id}}" name="id">
-              <button type="submit" id="btn-edit{{personal.id}}" class="btn btn-primary btn-sm">Editar</button>
+          <td>{{buscado.Usuario}}</td>
+          <td>{{buscado.Nombre}}</td>
+          <td>{{buscado.Apellido1}}</td>
+          <td>{{buscado.Apellido2}}</td>
+          <td>{{buscado.Correo}}</td>
+          <td>{{buscado.Puesto}}</td>
+          <td><button class="btn btn-primary btn-sm" id="btn-edit{{buscado.id}}" data-bs-toggle="modal" data-bs-target="#modal{{buscado.id}}">Ver</button></td>
+          <td><form action="/editarpersonal/{{buscado.id}}" method="POST">
+              <input type="hidden" value="{{buscado.id}}" name="id">
+              <button type="submit" id="btn-edit{{buscado.id}}" class="btn btn-primary btn-sm">Editar</button>
               </form></td> 
-          <td><form action="/editarcontraseña/{{personal.id}}" method="POST">
-              <input type="hidden" value="{{personal.id}}" name="id">
-              <button type="submit" id="btn-edit{{personal.id}}" class="btn btn-primary btn-sm">Cambio</button>
+          <td><form action="/editarcontraseña/{{buscado.id}}" method="POST">
+              <input type="hidden" value="{{buscado.id}}" name="id">
+              <button type="submit" id="btn-edit{{buscado.id}}" class="btn btn-primary btn-sm">Cambio</button>
               </form></td>     
         
         
           <td><form action="/borrarpersonal" method="POST">
-                    <input type="hidden" value="{{personal.id}}" name="id">
+                    <input type="hidden" value="{{buscado.id}}" name="id">
                     <button type="submit" class="btn btn-outline-danger btn-sm">Eliminar</button>
               </form> </td>  
       </tr>                
@@ -70,33 +70,33 @@
 </div>
               
 
-                        <div class="modal fade" id="modal{{personal.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal fade" id="modal{{buscado.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h1 class="modal-title fs-5" id="exampleModalLabe">{{personal .Titulo}}</h1>
+                                        <h1 class="modal-title fs-5" id="exampleModalLabe">{{buscado.Titulo}}</h1>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
-                                    <form action="/editartareas/{{personal .id}}" method="post">
+                                    <form action="/editartareas/{{buscado .id}}" method="post">
                                       <label>Usuario</label>
-                                      <p>{{personal.Usuario}}</p>
+                                      <p>{{buscado.Usuario}}</p>
                                       <label>Nombre</label>
-                                      <p>{{personal.Nombre}}</p>
+                                      <p>{{buscado.Nombre}}</p>
                                       <label>Primer Apellido</label>
-                                      <p>{{personal.Apellido1}}</p>
+                                      <p>{{buscado.Apellido1}}</p>
                                       <label>Segundo Apellido</label>
-                                      <p>{{personal.Apellido2}}</p>
+                                      <p>{{buscado.Apellido2}}</p>
                                       <label>Correo</label>
-                                      <p>{{personal.Correo}}</p>
+                                      <p>{{buscado.Correo}}</p>
                                       <label>Contraseña - ENCRIPTADA (SOLO PARA PHPADMIN)</label>
-                                      <p>{{personal.password_hash}}</p>
+                                      <p>{{buscado.password_hash}}</p>
                                       <label>Puesto</label>
-                                      <p>{{personal.Puesto}}</p>
+                                      <p>{{buscado.Puesto}}</p>
                                       <label>Ncuenta</label>
-                                      <p>{{personal.NCuenta}}</p>
+                                      <p>{{buscado.NCuenta}}</p>
                                       <label>Comentarios</label>
-                                      <p>{{personal.Comentarios}}</p>
+                                      <p>{{buscado.Comentarios}}</p>
 
                                     </form></div>
 

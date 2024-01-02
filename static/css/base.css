@@ -38,3 +38,6 @@ h1{
     font: 700 normal 2.52em 'tahoma'
 
 }
+.modal-title {
+    color: rgb(0, 0, 0);
+}

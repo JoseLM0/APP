@@ -63,6 +63,17 @@ class Contactos(db.Model):
             db.session.add(self)
         db.session.commit()
 
+class Tareas(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    Usuario = db.Column(db.String(45), nullable= False)
+    id_puesto = db.Column(db.Integer, nullable= False)
+    Titulo = db.Column(db.String(120), nullable= False)
+    Descripcion = db.Column(db.String(500), nullable= False)
+    FECHA = db.Column(db.DateTime, nullable = False, default = datetime.utcnow)
+    Estado = db.Column(db.String(50), nullable= False)
+   
+
+
 
 
 
