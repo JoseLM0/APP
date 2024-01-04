@@ -3,21 +3,133 @@
 {% block title %}Equipos Informaticos{% endblock %}
 
 {%block columna8 %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/tareas.css' ) }}">
+<title>Personal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+</head>
+<head>
 
+<link rel="stylesheet" href="{{ url_for('static', filename='css/contacto.css' ) }}">
 <br>
-<div class="alert alert-success" role="alert">
-    <h4 class="alert-heading">Invetario de Equipos Informaticos</h4>
-    <p>Lista de Equipos</p>
-    <hr>
-    <p class="mb-0">En prueba</p>
-  </div>
 
 
-{%endblock %}
+<div class="capa1" role="alert" name="capa1">
+    
+    <div class="container">
+      
+      <div class="card shadow">
+        <a class="nav-link" href="{{ url_for('nuevoordenador')}}">Nuevo</a>
+ 
+      <table class="table table-bordered" name="tabla">
+        <h3 class="alert-heading">Inventario de equipos Informaticos 
+
+            {% import "bootstrap/wtf.html" as wtf %}
+            {{ form.csrf_token() }}
+            {{ wtf.quick_form(form) }}
+        </h3>
+        <thead>
+            <tr>
+                <th scope="col">Codigo</th>
+                <th scope="col">Tipo</th>
+                <th scope="col">Estado</th>
+                <th scope="col">Activo</th>
+                <th scope="col">Proveedor</th>
+                <th scope="col">Nº Factura</th>
+                <th scope="col">Marca</th>
+                <th scope="col">Modelo</th>
+                <th scope="col">Lugar</th>
+                <th scope="col">Encargado</th>               
+                <th scope="col">Ver</th>
+                <th scope="col">Editar</th>
+                <th scope="col">Borrar</th>
+            </tr>
+        </thead>           
+      {% for ordenadores in ordenadores %}
+        <tr>
+          <td>{{ordenadores.Codigo}}</td>
+          <td>{{ordenadores.Tipo}}</td>
+          <td>{{ordenadores.Estado}}</td>
+          <td>{{ordenadores.Activo}}</td>
+          <td>{{ordenadores.Proveedor}}</td>
+          <td>{{ordenadores.Factura}}</td>
+          <td>{{ordenadores.Marca}}</td>
+          <td>{{ordenadores.Modelo}}</td>
+          <td>{{ordenadores.Lugar}}</td>
+          <td>{{ordenadores.Encargado}}</td>
 
 
-  {% block columna4 %}
-<p>Columna</p>
+
+          <td><button class="btn btn-primary btn-sm" id="btn-edit{{ordenadores.id}}" data-bs-toggle="modal" data-bs-target="#modal{{ordenadores.id}}">Ver</button></td>
+          <td><form action="/editarordenador/{{ordenadores.id}}" method="POST">
+              <input type="hidden" value="{{ordenadores.id}}" name="id">
+              <button type="submit" id="btn-edit{{ordenadores.id}}" class="btn btn-primary btn-sm">Editar</button>
+              </form></td> 
+
+        
+        
+          <td><form action="/borrarordenador" method="POST">
+                    <input type="hidden" value="{{ordenadores.id}}" name="id">
+                    <button type="submit" class="btn btn-outline-danger btn-sm">Eliminar</button>
+              </form> </td>  
+      </tr>                
+      </div>
+    </div>
+</div>
+              
+
+                        <div class="modal fade bd-example-modal-xl" id="modal{{ordenadores.id}}" tabindex="-1" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-xl">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="exampleModalLabe">{{ordenadores .Titulo}}</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                    <form action="/editarordenador/{{ordenadores .id}}" method="post">
+                                      <label><p> Codigo&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Tipo&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Estado</p></label>
+                                      <p>{{ordenadores.Codigo}}&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ordenadores.Tipo}}&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ordenadores.Estado}}</p>
+                                      <label> Fecha de Compra&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¿Activo?</label>
+                                      <p>{{ordenadores.Fecompra}}&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ordenadores.Activo}}</p>
+                                      <label>Marca</label>
+                                      <p>{{ordenadores.Marca}}</p>
+                                      <label>Modelo</label>
+                                      <p>{{ordenadores.Modelo}}</p>
+                                      <label>Tipo de Procesador</label>
+                                      <p>{{ordenadores.CPU}}</p>
+                                      <label>Tipo de Memoria Ram</label>
+                                      <p>{{ordenadores.MemoriaRam}}</p>
+                                      <label>Sistema Operativo</label>
+                                      <p>{{ordenadores.SO}}</p>
+                                      <label>¿Donde se encuentra?</label>
+                                      <p>{{ordenadores.Lugar}}</p>
+                                      <label>Subido por:</label>
+                                      <p>{{ordenadores.Usubido}}</p>
+                                      <label>Fecha subida</label>
+                                      <p>{{ordenadores.fsubida}}</p>
+                                      <label>Persona encargada</label>
+                                      <p>{{ordenadores.Encargado}}</p>
+                                      <label>Observaciones</label>
+                                      <p>{{ordenadores.Observaciones}}</p>
+                                      
+
+                                    </form></div>
+
+                                    
+                                </div>
+                            </div>                
+
+                        </div>
+
+                    </div>
+                </div>
+
+            {% endfor %}
+        </div>
+    </div>    
 
 
-  {% endblock %}
+
+
+
+{% endblock %}

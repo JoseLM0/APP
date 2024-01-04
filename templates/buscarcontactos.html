@@ -1,0 +1,124 @@
+{% extends "base/base.html" %}
+
+{% block title %}Personal{% endblock %}
+
+{%block columna8 %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/tareas.css' ) }}">
+<title>Personal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+</head>
+<head>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/contacto.css' ) }}">
+<br>
+<div class="capa1" role="alert" name="capa1">
+    
+    <div class="container">
+      
+      <div class="card shadow">
+
+
+        
+      <table class="table table-bordered" name="tabla">
+        <h3 class="alert-heading">Lista de personal  
+
+            {% import "bootstrap/wtf.html" as wtf %}
+            {{ form.csrf_token() }}
+            {{ wtf.quick_form(form) }}
+        </h3>
+        <thead>
+            <tr>
+                <th scope="col">Nombre</th>
+                <th scope="col">Primer <br>Apellido</th>
+                <th scope="col">Segundo <br>apellido</th>
+                <th scope="col">1º <br>Correo</th>
+                <th scope="col">2º <br>Correo</th>
+                <th scope="col">1º <br>Telefono</th>
+                <th scope="col">2º <br>Telefono</th>
+                <th scope="col">Empresa</th>
+                <th scope="col">Ver</th>
+                <th scope="col">Editar</th>
+                <th scope="col">Borrar</th>
+            </tr>
+        </thead>           
+      {% for buscado in buscado %}
+        <tr>
+            <td>{{buscado.Nombre}}</td>
+            <td>{{buscado.Apellido1}}</td>
+            <td>{{buscado.Apellido2}}</td>
+            <td>{{buscado.Correo1}}</td>
+            <td>{{buscado.Correo2}}</td>
+            <td>{{buscado.Telefono1}}</td>
+            <td>{{buscado.Telefono2}}</td>
+            <td>{{buscado.Empresa}}</td>
+            <td><button class="btn btn-primary btn-sm" id="btn-edit{{buscado.id}}" data-bs-toggle="modal" data-bs-target="#modal{{buscado.id}}">Ver</button></td>
+            <td><form action="/editarcontacto/{{buscado.id}}" method="POST">
+                <input type="hidden" value="{{buscado.id}}" name="id">
+                <button type="submit" id="btn-edit{{buscado.id}}" class="btn btn-primary btn-sm">Editar</button>
+                </form></td> 
+  
+          
+          
+            <td><form action="/borrarcontacto" method="POST">
+                      <input type="hidden" value="{{buscado.id}}" name="id">
+                      <button type="submit" class="btn btn-outline-danger btn-sm">Eliminar</button>
+                </form> </td>  
+      </tr>                
+      </div>
+    </div>
+</div>
+              
+
+                        <div class="modal fade" id="modal{{buscado.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="exampleModalLabe">{{buscado.Titulo}}</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                    <form action="/editarcontacto/{{buscado .id}}" method="post">
+                                        <label>Nombre</label>
+                                        <p>{{buscado.Nombre}}</p>
+                                        <label>Primer Apellido</label>
+                                        <p>{{buscado.Apellido1}}</p>
+                                        <label>Segundo Apellido</label>
+                                        <p>{{buscado.Apellido2}}</p>
+                                        <label>Correo</label>
+                                        <p>{{buscado.Correo1}}</p>
+                                        <label>Correo</label>
+                                        <p>{{buscado.Correo2}}</p>
+                                        <label>Telefono 1</label>
+                                        <p>{{buscado.Telefono1}}</p>
+                                        <label>Telefono 2</label>
+                                        <p>{{buscado.Telefono2}}</p>
+                                        <label>Direccion</label>
+                                        <p>Calle: {{buscado.Calle}}   Poblacion: {{buscado.Poblacion}} <br> Provincia: {{buscado.Provincia}}   Pais: {{buscado.Pais}}</p>
+                                        <label>Empresa</label>
+                                        <p>{{buscado.Empresa}}</p>
+                                        <label>Fecha subida</label>
+                                        <p>{{buscado.fechasubida}}</p>
+                                        <label>Usuario subida</label>
+                                        <p>{{buscado.usuariosubida}}</p>
+
+                                    </form></div>
+
+                                    
+                                </div>
+                            </div>                
+
+                        </div>
+
+                    </div>
+                </div>
+
+            {% endfor %}
+        </div>
+    </div>    
+
+
+
+
+
+{% endblock %}

@@ -1,9 +1,9 @@
 from flask import Flask, render_template, request, session, redirect, url_for, abort              
-from forms import Cambio_contraseña, Registro, Registro_contactos, Login_form, Buscador
+from forms import Cambio_contraseña, Registro, Registro_contactos, Login_form, Buscador, Ordenadoresform
 from flask_sqlalchemy import SQLAlchemy
 from flask_bootstrap import Bootstrap  
 import config 
-from models import db, Usuarios, Contactos, Tareas
+from models import db, Usuarios, Contactos, Tareas, Ordenadores
 from sqlalchemy.orm import sessionmaker
 from flask_mysqldb import MySQL
 from datetime import datetime
@@ -199,7 +199,7 @@ def nueva_tarea():
     user = session['Usuario']
     puesto = session['Puesto']
     d = datetime.now()
-    diaTarea = d.strftime("%Y-%m-%d $H:%M:%S")
+    diaTarea = d.strftime("%Y-%m-%d %H:%M:%S")
 
     if titulo and descripcion and user and estado: 
         cur = mysql.connection.cursor()
@@ -266,29 +266,105 @@ def contactos():
         return render_template('/buscarcontactos.html', form=form, busqueda = busqueda, buscado = buscado)
     return render_template("/contactos.html", personal = insertObject, form = form)
 
+
 @app.route('/nuevocontacto', methods=['GET', 'POST'])    
 def nuevocontacto():
     form = Registro_contactos()
+    d = datetime.now()
+    diasubidad = d.strftime("%Y/%Y/%D $H:%M:%S")
+    user = session['Usuario']
+    if form.validate_on_submit():
+        contacto = Contactos(Nombre = form.Nombre.data, Apellido1 = form.Apellido1.data, Apellido2 = form.Apellido2.data, Telefono1 = form.Telefono1.data, Telefono2 = form.Telefono2.data, Calle = form.Calle.data, Poblacion = form.Poblacion.data, Provincia = form.Provincia.data, Pais = form.Pais.data, Correo1 = form.Correo1.data, Correo2 = form.Correo2.data, Empresa = form.Empresa.data, fechasubida = diasubidad, usuariosubida = user)
+        db.session.add(contacto)
+        db.session.commit()
+        print('FORM VALIDO')
+        return redirect(url_for("contactos"))
+    else:
+        print('FORM falla')
+    return render_template('/nuevocontacto.html', form=form)
+
+@app.route('/borrarcontacto', methods=['POST'])
+def borrarcontacto():
+    cur = mysql.connection.cursor()
+    id = request.form['id']
+    sql = "DELETE FROM contactos WHERE id = %s"
+    data = (id,)
+    cur.execute(sql, data)
+    mysql.connection.commit()
+    return redirect(url_for('contactos'))
+
+@app.route('/editarcontacto/<string:id>', methods = ['GET', 'POST'])
+def editarcontacto(id):
     user = Contactos.query.filter_by(id=id).first()
     if user is None:
         abort(404)
+    form = Registro_contactos(request.form, obj=user) 
     if form.validate_on_submit():
-        user = Contactos()
         form.populate_obj(user)
-        db.session.add(user)
         db.session.commit()
-        return redirect(url_for("contactos"))
-
-    return render_template('nuevocontacto.html', form=form, perfil=True)
-
-
-@app.route('/registro', methods = ['GET', 'POST'])
-
+        return redirect(url_for("contactos"))   
+    return render_template('/editarcontacto.html', form=form, perfil=True)
 
 #EQUIPOS INFORMATICOS
-@app.route('/equipos_informaticos', methods=['GET'])
-def equipos_informaticos():
-    return render_template('/e-informaticos.html')
+
+@app.route('/equipos_informaticos', methods=['GET', 'POST'])
+def equipos_informaticos(): 
+    cursor = mysql.connection.cursor()
+    cursor.execute("SELECT * FROM ordenadores")
+    ordenadores = cursor.fetchall()
+    #Convertir a diccionario
+    insertObject = []
+    columnNames = [column[0] for column in cursor.description]
+    for record in ordenadores:
+        insertObject.append(dict(zip(columnNames, record)))
+        cursor.close()
+    form = Buscador()    
+    buscado = Ordenadores.query 
+    if form.validate_on_submit():
+        busqueda = form.busqueda.data
+        buscado = buscado.filter(Ordenadores.Tipo.like('%' + busqueda + '%'))
+        buscado = buscado.order_by(Ordenadores.Tipo).all()
+        return render_template('/buscarequipos.html', form=form, busqueda = busqueda, buscado = buscado)
+    return render_template('/e-informaticos.html', ordenadores = insertObject, form = form)
+
+
+@app.route('/nuevoordenador', methods=['GET', 'POST'])    
+def nuevoordenador():
+    form = Ordenadoresform()
+    d = datetime.now()
+    diasubidad = d.strftime("%Y/%m/%d $H:%M:%S")
+    user = session['Usuario']
+    if form.validate_on_submit():
+        contacto = Ordenadores(Codigo = form.Codigo.data, Tipo = form.Tipo.data, Estado = form.Estado.data, Activo = form.Activo.data, Fecompra = form.Fecompra.data, Proveedor = form.Proveedor.data, Factura = form.Factura.data, Marca = form.Marca.data, Modelo = form.Modelo.data, CPU = form.CPU.data, SO = form.SO.data, Lugar = form.Lugar.data, Encargado = form.Encargado.data, Observaciones = form.Observaciones.data, fsubida = diasubidad, Usubido = user)
+        db.session.add(contacto)
+        db.session.commit()
+        print('FORM VALIDO')
+        return redirect(url_for("equipos_informaticos"))
+    else:
+        print('FORM falla')
+    return render_template('/nuevoequipo.html', form=form)
+
+@app.route('/borrarordenador', methods=['POST'])
+def borrarordenador():
+    cur = mysql.connection.cursor()
+    id = request.form['id']
+    sql = "DELETE FROM ordenadores WHERE id = %s"
+    data = (id,)
+    cur.execute(sql, data)
+    mysql.connection.commit()
+    return redirect(url_for('equipos_informaticos'))
+
+@app.route('/editarordenador/<string:id>', methods = ['GET', 'POST'])
+def editarordenador(id):
+    user = Ordenadores.query.filter_by(id=id).first()
+    if user is None:
+        abort(404)
+    form = Ordenadoresform(request.form, obj=user) 
+    if form.validate_on_submit():
+        form.populate_obj(user)
+        db.session.commit()
+        return redirect(url_for("equipos_informaticos"))   
+    return render_template('/editarordenador.html', form=form, perfil=True)
 
 #Maquinaria
 @app.route('/maquinaria', methods=['GET'])
@@ -299,8 +375,6 @@ def maquinaria():
 @app.route('/vehiculos', methods=['GET'])
 def vehiculos():
     return render_template('/vehiculos.html')
-
-
 
 
 with app.app_context():

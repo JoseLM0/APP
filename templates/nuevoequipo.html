@@ -1,6 +1,6 @@
 {% extends "base/base.html" %}
 
-{% block title %}Contactos{% endblock %}
+{% block title %}Nuevo Ordenador{% endblock %}
 
 {%block columna8  %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/contacto.css' ) }}">
@@ -8,17 +8,14 @@
   <div class = "capa" role="alert">
 
   
-    <h4 class="alert-heading">Nuevo Contacto</h4>
+    <h4 class="alert-heading">Nuevo Ordenador</h4>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
   
-    <form id="contactos" action="/nuevocontacto" method="post">
+    <form id="contactos" action="/nuevoordenador" method="post">
       {% import "bootstrap/wtf.html" as wtf %}
       {{ form.csrf_token() }}
       {{ wtf.quick_form(form) }}
-  
-  
-          
-  
+
   
     </div>
   

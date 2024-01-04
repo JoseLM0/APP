@@ -17,6 +17,7 @@
     <div class="container">
       
       <div class="card shadow">
+        <a class="nav-link" href="{{ url_for('nuevocontacto')}}">Contacto</a>
 
 
         
@@ -29,38 +30,40 @@
         </h3>
         <thead>
             <tr>
-                <th scope="col">Usuario</th>
                 <th scope="col">Nombre</th>
-                <th scope="col">Primer Apellido</th>
-                <th scope="col">Segundo apellido</th>
-                <th scope="col">Correo</th>
-                <th scope="col">Puesto</th>
+                <th scope="col">Primer <br>Apellido</th>
+                <th scope="col">Segundo <br>apellido</th>
+                <th scope="col">1º <br>Correo</th>
+                <th scope="col">2º <br>Correo</th>
+                <th scope="col">1º <br>Telefono</th>
+                <th scope="col">2º <br>Telefono</th>
+                <th scope="col">Empresa</th>
                 <th scope="col">Ver</th>
                 <th scope="col">Editar</th>
-                <th scope="col">Cambiar <br>Contraseña</th>
                 <th scope="col">Borrar</th>
             </tr>
         </thead>           
       {% for personal in personal %}
         <tr>
-          <td>{{personal.Usuario}}</td>
           <td>{{personal.Nombre}}</td>
           <td>{{personal.Apellido1}}</td>
           <td>{{personal.Apellido2}}</td>
-          <td>{{personal.Correo}}</td>
-          <td>{{personal.Puesto}}</td>
+          <td>{{personal.Correo1}}</td>
+          <td>{{personal.Correo2}}</td>
+          <td>{{personal.Telefono1}}</td>
+          <td>{{personal.Telefono2}}</td>
+          <td>{{personal.Empresa}}</td>
+
+
           <td><button class="btn btn-primary btn-sm" id="btn-edit{{personal.id}}" data-bs-toggle="modal" data-bs-target="#modal{{personal.id}}">Ver</button></td>
-          <td><form action="/editarpersonal/{{personal.id}}" method="POST">
+          <td><form action="/editarcontacto/{{personal.id}}" method="POST">
               <input type="hidden" value="{{personal.id}}" name="id">
               <button type="submit" id="btn-edit{{personal.id}}" class="btn btn-primary btn-sm">Editar</button>
               </form></td> 
-          <td><form action="/editarcontraseña/{{personal.id}}" method="POST">
-              <input type="hidden" value="{{personal.id}}" name="id">
-              <button type="submit" id="btn-edit{{personal.id}}" class="btn btn-primary btn-sm">Cambio</button>
-              </form></td>     
+
         
         
-          <td><form action="/borrarpersonal" method="POST">
+          <td><form action="/borrarcontacto" method="POST">
                     <input type="hidden" value="{{personal.id}}" name="id">
                     <button type="submit" class="btn btn-outline-danger btn-sm">Eliminar</button>
               </form> </td>  
@@ -79,8 +82,6 @@
                                     </div>
                                     <div class="modal-body">
                                     <form action="/editartareas/{{personal .id}}" method="post">
-                                      <label>Usuario</label>
-                                      <p>{{personal.Usuario}}</p>
                                       <label>Nombre</label>
                                       <p>{{personal.Nombre}}</p>
                                       <label>Primer Apellido</label>
@@ -88,15 +89,22 @@
                                       <label>Segundo Apellido</label>
                                       <p>{{personal.Apellido2}}</p>
                                       <label>Correo</label>
-                                      <p>{{personal.Correo}}</p>
-                                      <label>Contraseña - ENCRIPTADA (SOLO PARA PHPADMIN)</label>
-                                      <p>{{personal.password_hash}}</p>
-                                      <label>Puesto</label>
-                                      <p>{{personal.Puesto}}</p>
-                                      <label>Ncuenta</label>
-                                      <p>{{personal.NCuenta}}</p>
-                                      <label>Comentarios</label>
-                                      <p>{{personal.Comentarios}}</p>
+                                      <p>{{personal.Correo1}}</p>
+                                      <label>Correo</label>
+                                      <p>{{personal.Correo2}}</p>
+                                      <label>Telefono 1</label>
+                                      <p>{{personal.Telefono1}}</p>
+                                      <label>Telefono 2</label>
+                                      <p>{{personal.Telefono2}}</p>
+                                      <label>Direccion</label>
+                                      <p>Calle: {{personal.Calle}}   Poblacion: {{personal.Poblacion}} <br> Provincia: {{personal.Provincia}}   Pais: {{personal.Pais}}</p>
+                                      <label>Empresa</label>
+                                      <p>{{personal.Empresa}}</p>
+                                      <label>Fecha subida</label>
+                                      <p>{{personal.fechasubida}}</p>
+                                      <label>Usuario subida</label>
+                                      <p>{{personal.usuariosubida}}</p>
+                                      
 
                                     </form></div>
 

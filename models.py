@@ -37,7 +37,7 @@ class Usuarios(db.Model, UserMixin):
         db.session.commit()
 
 class Contactos(db.Model):
-    __tablename__="Contactos"
+    __tablename__="contactos"
     id = db.Column(db.Integer, primary_key = True)
     Nombre = db.Column(db.String(45), nullable= False)
     Apellido1 = db.Column(db.String(45), nullable= False)
@@ -46,22 +46,13 @@ class Contactos(db.Model):
     Telefono2 = db.Column(db.Integer, nullable = True, default = 0)
     Correo1 = db.Column(db.String(45), nullable= True)
     Correo2 = db.Column(db.String(45), nullable= True)
+    Calle = db.Column(db.String(450), nullable= True)
+    Poblacion = db.Column(db.String(450), nullable= True)
+    Provincia = db.Column(db.String(450), nullable= True)
+    Pais = db.Column(db.String(450), nullable= True)
     Empresa = db.Column(db.String(45), nullable= True)
-    date = db.Column(db.DateTime, nullable = False, default = datetime.utcnow)
-    def __init__(self, Nombre, Apellido1, Apellido2, Telefono1, Telefono2, Correo1, Correo2, Empresa):
-        self.Nombre = Nombre
-        self.Apellido1 = Apellido1
-        self.Apellido2 = Apellido2
-        self.Telefono1 = Telefono1
-        self.Telefono2 = Telefono2
-        self.Correo1 = Correo1
-        self.Correo2 = Correo2
-        self.Empresa = Empresa
-        self.date = datetime.utcnow()
-    def save(self):
-        if not self.id:
-            db.session.add(self)
-        db.session.commit()
+    fechasubida = db.Column(db.DateTime, nullable = False, default = datetime.utcnow)
+    usuariosubida = db.Column(db.String(45), nullable= True)
 
 class Tareas(db.Model):
     id = db.Column(db.Integer, primary_key = True)
@@ -72,7 +63,26 @@ class Tareas(db.Model):
     FECHA = db.Column(db.DateTime, nullable = False, default = datetime.utcnow)
     Estado = db.Column(db.String(50), nullable= False)
    
-
+class Ordenadores(db.Model):
+    __tablename__="Ordenadores"
+    id = db.Column(db.Integer, primary_key = True)
+    Codigo = db.Column(db.String(10), nullable= False)
+    Tipo = db.Column(db.String(45), nullable= False)
+    Estado = db.Column(db.String(10), nullable= True)
+    Activo = db.Column(db.String(2), nullable= True)
+    Fecompra = db.Column(db.DateTime, nullable = False, default = datetime.utcnow)
+    Proveedor = db.Column(db.String(90), nullable= True)
+    Factura = db.Column(db.String(90), nullable= True)
+    Marca = db.Column(db.String(45), nullable= True)
+    Modelo = db.Column(db.String(90), nullable= True)
+    CPU = db.Column(db.String(45), nullable= True)
+    MemoriaRam = db.Column(db.String(35), nullable= True)
+    SO = db.Column(db.String(45), nullable= True)
+    Lugar = db.Column(db.String(45), nullable= True)
+    Usubido = db.Column(db.String(45), nullable= True)
+    fsubida = db.Column(db.DateTime, nullable = False, default = datetime.utcnow)
+    Encargado = db.Column(db.String(45), nullable= True)
+    Observaciones = db.Column(db.String(450), nullable= True)
 
 
 
