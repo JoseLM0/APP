@@ -21,7 +21,7 @@
 
         
       <table class="table table-bordered" name="tabla">
-        <h3 class="alert-heading">Lista de personal  
+        <h3 class="alert-heading">Lista de Vehiculos   
 
             {% import "bootstrap/wtf.html" as wtf %}
             {{ form.csrf_token() }}
@@ -61,14 +61,14 @@
 
 
           <td><button class="btn btn-primary btn-sm" id="btn-edit{{buscado.id}}" data-bs-toggle="modal" data-bs-target="#modal{{buscado.id}}">Ver</button></td>
-          <td><form action="/editarordenador/{{buscado.id}}" method="POST">
+          <td><form action="/editarvehiculos/{{buscado.id}}" method="POST">
               <input type="hidden" value="{{buscado.id}}" name="id">
               <button type="submit" id="btn-edit{{buscado.id}}" class="btn btn-primary btn-sm">Editar</button>
               </form></td> 
 
         
         
-          <td><form action="/borrarordenador" method="POST">
+          <td><form action="/borrarvehiculos" method="POST">
                     <input type="hidden" value="{{buscado.id}}" name="id">
                     <button type="submit" class="btn btn-outline-danger btn-sm">Eliminar</button>
               </form> </td> 
@@ -87,29 +87,33 @@
                                     </div>
                                     <div class="modal-body">
                                     <form action="/editarcontacto/{{buscado .id}}" method="post">
-                                        <p>{{buscado.Codigo}}&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{buscado.Tipo}}&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{buscado.Estado}}</p>
-                                      <label> Fecha de Compra&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¿Activo?</label>
-                                      <p>{{buscado.Fecompra}}&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{buscado.Activo}}</p>
-                                      <label>Marca</label>
-                                      <p>{{buscado.Marca}}</p>
-                                      <label>Modelo</label>
-                                      <p>{{buscado.Modelo}}</p>
-                                      <label>Tipo de Procesador</label>
-                                      <p>{{buscado.CPU}}</p>
-                                      <label>Tipo de Memoria Ram</label>
-                                      <p>{{buscado.MemoriaRam}}</p>
-                                      <label>Sistema Operativo</label>
-                                      <p>{{buscado.SO}}</p>
-                                      <label>¿Donde se encuentra?</label>
-                                      <p>{{buscado.Lugar}}</p>
-                                      <label>Subido por:</label>
-                                      <p>{{buscado.Usubido}}</p>
-                                      <label>Fecha subida</label>
-                                      <p>{{buscado.fsubida}}</p>
-                                      <label>Persona encargada</label>
-                                      <p>{{buscado.Encargado}}</p>
-                                      <label>Observaciones</label>
-                                      <p>{{buscado.Observaciones}}</p>
+                                        <form action="/editarvehiculos/{{buscado.id}}" method="post">
+                                            <label><p> Codigo&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Tipo&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Estado</p></label>
+                                            <p>{{buscado.Codigo}}&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{buscado.Tipo}}&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{buscado.Estado}}</p>
+                                            <label> Fecha de Compra&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¿Activo?</label>
+                                            <p>{{buscado.Fecompra}}&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{buscado.Activo}}</p>
+                                            <label>Fecha de Matriculacion</label>
+                                            <p>{{buscado.Fematri}}</p>
+                                            <label>Marca</label>
+                                            <p>{{buscado.Marca}}</p>
+                                            <label>Modelo</label>
+                                            <p>{{buscado.Modelo}}</p>
+                                            <label>Nº Matricula</label>
+                                            <p>{{buscado.Matricula}}</p>
+                                            <label>Nº de Serie</label>
+                                            <p>{{buscado.NSerie}}</p>
+                                            <label>Fecha ultima ITV</label>
+                                            <p>{{buscado.ITV}}</p>
+                                            <label>¿Donde se encuentra?</label>
+                                            <p>{{buscado.Lugar}}</p>
+                                            <label>Subido por:</label>
+                                            <p>{{buscado.Usubido}}</p>
+                                            <label>Fecha subida</label>
+                                            <p>{{buscado.fsubida}}</p>
+                                            <label>Persona encargada</label>
+                                            <p>{{buscado.Encargado}}</p>
+                                            <label>Observaciones</label>
+                                            <p>{{buscado.Observaciones}}</p>
 
                                     </form></div>
 

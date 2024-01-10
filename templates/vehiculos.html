@@ -1,23 +1,137 @@
 {% extends "base/base.html" %}
 
-{% block title %}Vehiculos{% endblock %}
+{% block title %}Listado de Vehiculos{% endblock %}
 
 {%block columna8 %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/tareas.css' ) }}">
+<title>Personal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+</head>
+<head>
 
+<link rel="stylesheet" href="{{ url_for('static', filename='css/contacto.css' ) }}">
 <br>
-<div class="alert alert-success" role="alert">
-    <h4 class="alert-heading">Invetario de Vehiculos</h4>
-    <p>Lista de Vehiculos</p>
-    <hr>
-    <p class="mb-0">En prueba</p>
-  </div>
 
 
-{%endblock %}
+<div class="capa1" role="alert" name="capa1">
+    
+    <div class="container">
+      
+      <div class="card shadow">
+        <a class="nav-link" href="{{ url_for('nuevovehiculos')}}">Nuevo</a>
+ 
+      <table class="table table-bordered" name="tabla">
+        <h3 class="alert-heading">Inventario de Vehiculos 
+
+            {% import "bootstrap/wtf.html" as wtf %}
+            {{ form.csrf_token() }}
+            {{ wtf.quick_form(form) }}
+        </h3>
+        <thead>
+            <tr>
+                <th scope="col">Codigo</th>
+                <th scope="col">Tipo</th>
+                <th scope="col">Estado</th>
+                <th scope="col">Activo</th>
+                <th scope="col">Proveedor</th>
+                <th scope="col">Nº Factura</th>
+                <th scope="col">Marca</th>
+                <th scope="col">Modelo</th>
+                <th scope="col">Lugar</th>
+                <th scope="col">Encargado</th>               
+                <th scope="col">Ver</th>
+                <th scope="col">Editar</th>
+                <th scope="col">Borrar</th>
+            </tr>
+        </thead>           
+      {% for vehiculos in vehiculos %}
+        <tr>
+          <td>{{vehiculos.Codigo}}</td>
+          <td>{{vehiculos.Tipo}}</td>
+          <td>{{vehiculos.Estado}}</td>
+          <td>{{vehiculos.Activo}}</td>
+          <td>{{vehiculos.Proveedor}}</td>
+          <td>{{vehiculos.Factura}}</td>
+          <td>{{vehiculos.Marca}}</td>
+          <td>{{vehiculos.Modelo}}</td>
+          <td>{{vehiculos.Lugar}}</td>
+          <td>{{vehiculos.Encargado}}</td>
 
 
-  {% block columna4 %}
-<p>Columna</p>
+
+          <td><button class="btn btn-primary btn-sm" id="btn-edit{{vehiculos.id}}" data-bs-toggle="modal" data-bs-target="#modal{{vehiculos.id}}">Ver</button></td>
+          <td><form action="/editarvehiculos/{{vehiculos.id}}" method="POST">
+              <input type="hidden" value="{{vehiculos.id}}" name="id">
+              <button type="submit" id="btn-edit{{vehiculos.id}}" class="btn btn-primary btn-sm">Editar</button>
+              </form></td> 
+
+        
+        
+          <td><form action="/borrarvehiculos" method="POST">
+                    <input type="hidden" value="{{vehiculos.id}}" name="id">
+                    <button type="submit" class="btn btn-outline-danger btn-sm">Eliminar</button>
+              </form> </td>  
+      </tr>                
+      </div>
+    </div>
+</div>
+              
+
+                        <div class="modal fade bd-example-modal-xl" id="modal{{vehiculos.id}}" tabindex="-1" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-xl">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="exampleModalLabe">{{vehiculos.Titulo}}</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                    <form action="/editarvehiculos/{{vehiculos.id}}" method="post">
+                                      <label><p> Codigo&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Tipo&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Estado</p></label>
+                                      <p>{{vehiculos.Codigo}}&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{vehiculos.Tipo}}&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{vehiculos.Estado}}</p>
+                                      <label> Fecha de Compra&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¿Activo?</label>
+                                      <p>{{vehiculos.Fecompra}}&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{vehiculos.Activo}}</p>
+                                      <label>Fecha de Matriculacion</label>
+                                      <p>{{vehiculos.Fematri}}</p>
+                                      <label>Marca</label>
+                                      <p>{{vehiculos.Marca}}</p>
+                                      <label>Modelo</label>
+                                      <p>{{vehiculos.Modelo}}</p>
+                                      <label>Nº Matricula</label>
+                                      <p>{{vehiculos.Matricula}}</p>
+                                      <label>Nº de Serie</label>
+                                      <p>{{vehiculos.NSerie}}</p>
+                                      <label>Dia ultima ITV</label>
+                                      <p>{{vehiculos.ITV}}</p>
+                                      <label>¿Donde se encuentra?</label>
+                                      <p>{{vehiculos.Lugar}}</p>
+                                      <label>Subido por:</label>
+                                      <p>{{vehiculos.Usubido}}</p>
+                                      <label>Fecha subida</label>
+                                      <p>{{vehiculos.fsubida}}</p>
+                                      <label>Persona encargada</label>
+                                      <p>{{vehiculos.Encargado}}</p>
+                                      <label>Observaciones</label>
+                                      <p>{{vehiculos.Observaciones}}</p>
+                                      
+
+                                    </form></div>
+
+                                    
+                                </div>
+                            </div>                
+
+                        </div>
+
+                    </div>
+                </div>
+
+            {% endfor %}
+        </div>
+    </div>    
 
 
-  {% endblock %}
+
+
+
+{% endblock %}

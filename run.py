@@ -1,10 +1,11 @@
 from flask import Flask, render_template, request, session, redirect, url_for, abort              
-from forms import Cambio_contraseña, Registro, Registro_contactos, Login_form, Buscador, Ordenadoresform
+from forms import Cambio_contraseña, Registro, Registro_contactos, Login_form, Buscador, Ordenadoresform, MaquinariaForm, VehiculosForm, FiltroTareasForm
 from flask_sqlalchemy import SQLAlchemy
 from flask_bootstrap import Bootstrap  
 import config 
-from models import db, Usuarios, Contactos, Tareas, Ordenadores
-from sqlalchemy.orm import sessionmaker
+from models import db, Usuarios, Contactos, Tareas, Ordenadores, Maquinaria, Vehiculos
+from sqlalchemy import or_ 
+from flask_login import LoginManager,login_user,logout_user,login_required,current_user
 from flask_mysqldb import MySQL
 from datetime import datetime
 from werkzeug.utils import secure_filename
@@ -24,6 +25,9 @@ app.config['MYSQL_DB'] = config.MYSQL_DB
 
 mysql = MySQL(app)
 
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = "login"
 
 #INICIO
 
@@ -170,24 +174,41 @@ def editarcontraseña(id):
 #Tareas
 @app.route('/tareas', methods=['GET', 'POST'])
 def tareas():
+    if session is False:
+        return redirect(url_for("login"))   
     puesto = session['Puesto']
-    cur = mysql.connection.cursor()
-    cur.execute("SElECT * FROM tareas WHERE id_puesto >= %s", [puesto])
-    tareas = cur.fetchall()
-    insertObject = []
-    columnNames = [column[0] for column in cur.description]
-    for record in tareas:
-        insertObject.append(dict(zip(columnNames, record)))
-    cur.close()
+    forma = FiltroTareasForm()
     form = Buscador()    
+    cur = mysql.connection.cursor()
+    if forma.validate_on_submit():
+        esta = forma.Esta.data
+        if esta == "5":
+            return redirect(url_for("tareas"))
+        cur.execute("SElECT * FROM tareas WHERE id_puesto >= %s AND estado = %s", [puesto, esta])
+        tareas = cur.fetchall()
+        insertObject = []
+        columnNames = [column[0] for column in cur.description]
+        for record in tareas:
+            insertObject.append(dict(zip(columnNames, record)))
+        cur.close()
+        return render_template('/tareas.html', tareas = insertObject, form=form, forma = forma, esta = esta) 
+    else:
+        cur.execute("SElECT * FROM tareas WHERE id_puesto >= %s", [puesto])
+        tareas = cur.fetchall()
+        insertObject = []
+        columnNames = [column[0] for column in cur.description]
+        for record in tareas:
+            insertObject.append(dict(zip(columnNames, record)))
+        cur.close()
     tareas = Tareas.query 
     if form.validate_on_submit():
         busqueda = form.busqueda.data
-        tareas = tareas.filter(Tareas.Descripcion.like('%' + busqueda + '%'))
-        tareas = tareas.order_by(Tareas.Titulo).all()
-        return render_template('/buscartarea.html', form=form, busqueda = busqueda, tareas = tareas)
-    return render_template('/tareas.html', tareas = insertObject, form=form)  
-
+        if busqueda is not True:
+            tareas = tareas.filter(or_(Tareas.Titulo.like('%' + busqueda + '%'),Tareas.Descripcion.like('%' + busqueda + '%')))
+            tareas = tareas.order_by(Tareas.Titulo).all()
+            return render_template('/buscartarea.html', form=form, busqueda = busqueda, tareas = tareas)
+        
+    return render_template('/tareas.html', tareas = insertObject, form=form, forma = forma)  
 
 
 
@@ -221,7 +242,7 @@ def borrartarea():
 
 @app.route('/editartareas/<string:id>', methods=['POST'])
 def editartareas(id):
-    
+
     titulo = request.form['Titulo']
     descripcion = request.form['Descripcion']
     estado = request.form['Estado']
@@ -237,9 +258,12 @@ def editartareas(id):
     return redirect(url_for('tareas'))
 
 
-@app.route('/vuelta', methods=['GET'])
-def vuelta():
-    return render_template('/e-informaticos.html')
+@app.route('/prueba', methods=['GET'])
+def prueba():
+    from login import estalogueado
+    if not estalogueado:
+        abort(404) 
+    return render_template('/prueba.html')
    
 
 
@@ -247,7 +271,10 @@ def vuelta():
 #Contacto
 
 @app.route('/listadecontactos', methods=['GET', 'POST'])
-def contactos(): 
+def contactos():
+    from login import estalogueado
+    if not estalogueado:
+        abort(404) 
     cursor = mysql.connection.cursor()
     cursor.execute("SELECT * FROM contactos")
     personal = cursor.fetchall()
@@ -261,7 +288,22 @@ def contactos():
     buscado = Contactos.query 
     if form.validate_on_submit():
         busqueda = form.busqueda.data
-        buscado = buscado.filter(Contactos.Nombre.like('%' + busqueda + '%'))
+        buscado = buscado.filter(or_(Contactos.Nombre.like('%' + busqueda + '%'),
+                                       Contactos.Apellido1.like('%' + busqueda + '%'),
+                                       Contactos.Apellido2.like('%' + busqueda + '%'),
+                                       Contactos.Telefono1.like('%' + busqueda + '%'),
+                                       Contactos.Telefono2.like('%' + busqueda + '%'),
+                                       Contactos.Correo1.like('%' + busqueda + '%'),
+                                       Contactos.Correo2.like('%' + busqueda + '%'),
+                                       Contactos.Calle.like('%' + busqueda + '%'),
+                                       Contactos.Poblacion.like('%' + busqueda + '%'),
+                                       Contactos.Provincia.like('%' + busqueda + '%'),
+                                       Contactos.Pais.like('%' + busqueda + '%'),
+                                       Contactos.Empresa.like('%' + busqueda + '%'),
+                                       Contactos.fechasubida.like('%' + busqueda + '%'),
+                                       Contactos.usuariosubida.like('%' + busqueda + '%'),                                      
+                                       
+                                       ))
         buscado = buscado.order_by(Contactos.Nombre).all()
         return render_template('/buscarcontactos.html', form=form, busqueda = busqueda, buscado = buscado)
     return render_template("/contactos.html", personal = insertObject, form = form)
@@ -269,10 +311,13 @@ def contactos():
 
 @app.route('/nuevocontacto', methods=['GET', 'POST'])    
 def nuevocontacto():
+    if not estalogueado:
+        abort(404)  
     form = Registro_contactos()
     d = datetime.now()
     diasubidad = d.strftime("%Y/%Y/%D $H:%M:%S")
-    user = session['Usuario']
+    #user = session['Usuario']
+    user = ['Usuario']
     if form.validate_on_submit():
         contacto = Contactos(Nombre = form.Nombre.data, Apellido1 = form.Apellido1.data, Apellido2 = form.Apellido2.data, Telefono1 = form.Telefono1.data, Telefono2 = form.Telefono2.data, Calle = form.Calle.data, Poblacion = form.Poblacion.data, Provincia = form.Provincia.data, Pais = form.Pais.data, Correo1 = form.Correo1.data, Correo2 = form.Correo2.data, Empresa = form.Empresa.data, fechasubida = diasubidad, usuariosubida = user)
         db.session.add(contacto)
@@ -285,6 +330,8 @@ def nuevocontacto():
 
 @app.route('/borrarcontacto', methods=['POST'])
 def borrarcontacto():
+    if users is False:
+        return redirect(url_for('login')) 
     cur = mysql.connection.cursor()
     id = request.form['id']
     sql = "DELETE FROM contactos WHERE id = %s"
@@ -322,7 +369,22 @@ def equipos_informaticos():
     buscado = Ordenadores.query 
     if form.validate_on_submit():
         busqueda = form.busqueda.data
-        buscado = buscado.filter(Ordenadores.Tipo.like('%' + busqueda + '%'))
+        buscado = buscado.filter(or_(Ordenadores.Codigo.like('%' + busqueda + '%'),
+                                       Ordenadores.Tipo.like('%' + busqueda + '%'),
+                                       Ordenadores.Estado.like('%' + busqueda + '%'),
+                                       Ordenadores.Activo.like('%' + busqueda + '%'),
+                                       Ordenadores.Fecompra.like('%' + busqueda + '%'),
+                                       Ordenadores.Activo.like('%' + busqueda + '%'),
+                                       Ordenadores.Proveedor.like('%' + busqueda + '%'),
+                                       Ordenadores.Factura.like('%' + busqueda + '%'),
+                                       Ordenadores.Marca.like('%' + busqueda + '%'),
+                                       Ordenadores.Modelo.like('%' + busqueda + '%'),
+                                       Ordenadores.CPU.like('%' + busqueda + '%'),
+                                       Ordenadores.MemoriaRam.like('%' + busqueda + '%'),
+                                       Ordenadores.SO.like('%' + busqueda + '%'),
+                                       Ordenadores.Encargado.like('%' + busqueda + '%'),
+                                       Ordenadores.Observaciones.like('%' + busqueda + '%'),
+                                           ))
         buscado = buscado.order_by(Ordenadores.Tipo).all()
         return render_template('/buscarequipos.html', form=form, busqueda = busqueda, buscado = buscado)
     return render_template('/e-informaticos.html', ordenadores = insertObject, form = form)
@@ -335,7 +397,7 @@ def nuevoordenador():
     diasubidad = d.strftime("%Y/%m/%d $H:%M:%S")
     user = session['Usuario']
     if form.validate_on_submit():
-        contacto = Ordenadores(Codigo = form.Codigo.data, Tipo = form.Tipo.data, Estado = form.Estado.data, Activo = form.Activo.data, Fecompra = form.Fecompra.data, Proveedor = form.Proveedor.data, Factura = form.Factura.data, Marca = form.Marca.data, Modelo = form.Modelo.data, CPU = form.CPU.data, SO = form.SO.data, Lugar = form.Lugar.data, Encargado = form.Encargado.data, Observaciones = form.Observaciones.data, fsubida = diasubidad, Usubido = user)
+        contacto = Ordenadores(Codigo = form.Codigo.data, Tipo = form.Tipo.data, Estado = form.Estado.data, Activo = form.Activo.data, Fecompra = form.Fecompra.data, Proveedor = form.Proveedor.data, Factura = form.Factura.data, Marca = form.Marca.data, Modelo = form.Modelo.data, CPU = form.CPU.data, SO = form.SO.data, MemoriaRam = form.MemoriaRam.data, Lugar = form.Lugar.data, Encargado = form.Encargado.data, Observaciones = form.Observaciones.data, fsubida = diasubidad, Usubido = user)
         db.session.add(contacto)
         db.session.commit()
         print('FORM VALIDO')
@@ -367,14 +429,160 @@ def editarordenador(id):
     return render_template('/editarordenador.html', form=form, perfil=True)
 
 #Maquinaria
-@app.route('/maquinaria', methods=['GET'])
-def maquinaria():
-    return render_template('/maquinaria.html')
+
+
+@app.route('/maquinaria', methods=['GET', 'POST'])
+def maquinaria(): 
+    cursor = mysql.connection.cursor()
+    cursor.execute("SELECT * FROM maquinaria")
+    maquinaria = cursor.fetchall()
+    #Convertir a diccionario
+    insertObject = []
+    columnNames = [column[0] for column in cursor.description]
+    for record in maquinaria:
+        insertObject.append(dict(zip(columnNames, record)))
+        cursor.close()
+    form = Buscador()    
+    buscado = Maquinaria.query 
+    if form.validate_on_submit():
+        busqueda = form.busqueda.data
+        buscado = buscado.filter((or_(Maquinaria.Codigo.like('%' + busqueda + '%'),
+                                       Maquinaria.Tipo.like('%' + busqueda + '%'),
+                                       Maquinaria.Estado.like('%' + busqueda + '%'),
+                                       Maquinaria.Activo.like('%' + busqueda + '%'),
+                                       Maquinaria.Fecompra.like('%' + busqueda + '%'),
+                                       Maquinaria.Proveedor.like('%' + busqueda + '%'),
+                                       Maquinaria.Factura.like('%' + busqueda + '%'),
+                                       Maquinaria.Marca.like('%' + busqueda + '%'),
+                                       Maquinaria.Modelo.like('%' + busqueda + '%'),
+                                       Maquinaria.NSerie.like('%' + busqueda + '%'),
+                                       Maquinaria.Lugar.like('%' + busqueda + '%'),
+                                       Maquinaria.Usubido.like('%' + busqueda + '%'),
+                                       Maquinaria.Encargado.like('%' + busqueda + '%'),
+                                       Maquinaria.Observaciones.like('%' + busqueda + '%'),                                                                            
+                                       )))
+        buscado = buscado.order_by(Maquinaria.Tipo).all()
+        return render_template('/buscarmaquinaria.html', form=form, busqueda = busqueda, buscado = buscado)
+    return render_template('/maquinaria.html', maquinaria = insertObject, form = form)
+
+
+@app.route('/nuevamaquinaria', methods=['GET', 'POST'])    
+def nuevamaquinaria():
+    form = MaquinariaForm()
+    d = datetime.now()
+    diasubidad = d.strftime("%Y/%m/%d $H:%M:%S")
+    user = session['Usuario']
+    if form.validate_on_submit():
+        nuevo = Maquinaria(Codigo = form.Codigo.data, Tipo = form.Tipo.data, Estado = form.Estado.data, Activo = form.Activo.data, Fecompra = form.Fecompra.data, Proveedor = form.Proveedor.data, Factura = form.Factura.data, Marca = form.Marca.data, Modelo = form.Modelo.data, NSerie = form.NSerie.data, Lugar = form.Lugar.data, Encargado = form.Encargado.data, Observaciones = form.Observaciones.data, fsubida = diasubidad, Usubido = user)
+        db.session.add(nuevo)
+        db.session.commit()
+        print('FORM VALIDO')
+        return redirect(url_for("maquinaria"))
+    else:
+        print('FORM falla')
+    return render_template('/nuevamaquina.html', form=form)
+
+@app.route('/borrarmaquina', methods=['POST'])
+def borrarmaquina():
+    cur = mysql.connection.cursor()
+    id = request.form['id']
+    sql = "DELETE FROM maquinaria WHERE id = %s"
+    data = (id,)
+    cur.execute(sql, data)
+    mysql.connection.commit()
+    return redirect(url_for('maquinaria'))
+
+@app.route('/editarmaquinaria/<string:id>', methods = ['GET', 'POST'])
+def editarmaquinaria(id):
+    user = Maquinaria.query.filter_by(id=id).first()
+    if user is None:
+        abort(404)
+    form = MaquinariaForm(request.form, obj=user) 
+    if form.validate_on_submit():
+        form.populate_obj(user)
+        db.session.commit()
+        return redirect(url_for("maquinaria"))   
+    return render_template('/editarmaquinaria.html', form=form, perfil=True)    
 
 #Vehiculos
-@app.route('/vehiculos', methods=['GET'])
-def vehiculos():
-    return render_template('/vehiculos.html')
+
+
+@app.route('/vehiculos', methods=['GET', 'POST'])
+def vehiculos(): 
+    cursor = mysql.connection.cursor()
+    cursor.execute("SELECT * FROM vehiculos")
+    vehiculos = cursor.fetchall()
+    #Convertir a diccionario
+    insertObject = []
+    columnNames = [column[0] for column in cursor.description]
+    for record in vehiculos:
+        insertObject.append(dict(zip(columnNames, record)))
+        cursor.close()
+    form = Buscador()    
+    buscado = Vehiculos.query 
+    if form.validate_on_submit():
+        busqueda = form.busqueda.data
+        buscado = buscado.filter((or_(Vehiculos.Codigo.like('%' + busqueda + '%'),
+                                       Vehiculos.Tipo.like('%' + busqueda + '%'),
+                                       Vehiculos.Estado.like('%' + busqueda + '%'),
+                                       Vehiculos.Activo.like('%' + busqueda + '%'),
+                                       Vehiculos.Fecompra.like('%' + busqueda + '%'),
+                                       Vehiculos.Fematri.like('%' + busqueda + '%'),
+                                       Vehiculos.Proveedor.like('%' + busqueda + '%'),
+                                       Vehiculos.Factura.like('%' + busqueda + '%'),
+                                       Vehiculos.Marca.like('%' + busqueda + '%'),
+                                       Vehiculos.Modelo.like('%' + busqueda + '%'),
+                                       Vehiculos.Matricula.like('%' + busqueda + '%'),
+                                       Vehiculos.NSerie.like('%' + busqueda + '%'),
+                                       Vehiculos.ITV.like('%' + busqueda + '%'),
+                                       Vehiculos.Lugar.like('%' + busqueda + '%'),
+                                       Vehiculos.Encargado.like('%' + busqueda + '%'),
+                                       Vehiculos.Observaciones.like('%' + busqueda + '%'),                                                                              
+                                       )))
+        buscado = buscado.order_by(Vehiculos.Tipo).all()
+        return render_template('/buscarvehiculos.html', form=form, busqueda = busqueda, buscado = buscado)
+    return render_template('/vehiculos.html', vehiculos = insertObject, form = form)
+
+
+@app.route('/nuevovehiculos', methods=['GET', 'POST'])    
+def nuevovehiculos():
+    form = VehiculosForm()
+    d = datetime.now()
+    diasubidad = d.strftime("%Y/%m/%d $H:%M:%S")
+    user = session['Usuario']
+    if form.validate_on_submit():
+        contacto = Vehiculos(Codigo = form.Codigo.data, Tipo = form.Tipo.data, Estado = form.Estado.data, Activo = form.Activo.data, Fecompra = form.Fecompra.data, Fematri = form.Fematri.data, Proveedor = form.Proveedor.data, Factura = form.Factura.data, Marca = form.Marca.data, Modelo = form.Modelo.data, Matricula = form.Matricula.data, ITV = form.ITV.data, NSerie = form.NSerie.data, Lugar = form.Lugar.data, Encargado = form.Encargado.data, Observaciones = form.Observaciones.data, fsubida = diasubidad, Usubido = user)
+        db.session.add(contacto)
+        db.session.commit()
+        print('FORM VALIDO')
+        return redirect(url_for("vehiculos"))
+    else:
+        print('FORM falla')
+    return render_template('/nuevovehiculos.html', form=form)
+
+@app.route('/borrarvehiculos', methods=['POST'])
+def borrarvehiculos():
+    cur = mysql.connection.cursor()
+    id = request.form['id']
+    sql = "DELETE FROM vehiculos WHERE id = %s"
+    data = (id,)
+    cur.execute(sql, data)
+    mysql.connection.commit()
+    return redirect(url_for('vehiculos'))
+
+@app.route('/editarvehiculos/<string:id>', methods = ['GET', 'POST'])
+def editarvehiculos(id):
+    user = Vehiculos.query.filter_by(id=id).first()
+    if user is None:
+        abort(404)
+    form = VehiculosForm(request.form, obj=user) 
+    if form.validate_on_submit():
+        form.populate_obj(user)
+        db.session.commit()
+        return redirect(url_for("vehiculos"))   
+    return render_template('/editarvehiculos.html', form=form, perfil=True)
+
+
 
 
 with app.app_context():
@@ -383,6 +591,12 @@ with app.app_context():
 
     users = Usuarios.query.all()
     print(users)
+
+def estalogueado():
+    if "id" in session:
+        return True
+    else:
+        return False   
 
 
 if __name__ == '__main__':

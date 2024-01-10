@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, validators, SubmitField, PasswordField, IntegerField, BooleanField, SelectMultipleField, RadioField, DateField
+from wtforms import StringField, validators, SubmitField, PasswordField, IntegerField, BooleanField, SelectMultipleField, RadioField, DateField, SelectField
 from wtforms.validators import  DataRequired, Email, Length, NumberRange
 import email_validator
 
@@ -52,6 +52,7 @@ class Cambio_contraseña(FlaskForm):
 # Buscador    
 class Buscador(FlaskForm):
     busqueda = StringField("Descripcion", validators=[DataRequired()])  
+    #categorias = RadioField('Categorias', choices=[('1','Titulo'), ('2','Descripcion')], validators=[DataRequired()])
     submit = SubmitField('Entrar')
 
 class Ordenadoresform(FlaskForm):
@@ -72,3 +73,48 @@ class Ordenadoresform(FlaskForm):
     Encargado = StringField('Encargado', validators=[DataRequired(), Length(max=45)])     
     Observaciones = StringField('Observaciones', validators=[DataRequired(), Length(max=450)])  
     submit = SubmitField('Guardar')
+
+class MaquinariaForm(FlaskForm):
+    Codigo = StringField('Codigo', validators=[DataRequired(), Length(max=10)])
+    Tipo = StringField('Tipo', validators=[DataRequired(), Length(max=45)])
+    Estado = StringField('Estado', validators=[DataRequired(), Length(max=10)])
+    Activo = StringField('Activo', validators=[DataRequired(), Length(max=2)])
+    Fecompra = DateField('Dia de compra del bien', format='%Y-%m-%d', validators=[DataRequired()])
+    Activo = RadioField('Activo', choices=[('SI','Activo'), ('NO','Inactivo')], validators=[DataRequired()])
+    Proveedor = StringField('Proveedor', validators=[DataRequired(), Length(max=90)]) 
+    Factura = StringField('Factura', validators=[DataRequired(), Length(max=90)]) 
+    Marca = StringField('Marca', validators=[DataRequired(), Length(max=90)]) 
+    Modelo = StringField('Modelo', validators=[DataRequired(), Length(max=90)])
+    NSerie = StringField('Nº de serie', validators=[DataRequired(), Length(max=90)])
+    Lugar = StringField('Lugar', validators=[DataRequired(), Length(max=45)])  
+    Encargado = StringField('Encargado', validators=[DataRequired(), Length(max=45)])     
+    Observaciones = StringField('Observaciones', validators=[DataRequired(), Length(max=450)])  
+    submit = SubmitField('Guardar')
+
+class VehiculosForm(FlaskForm):
+    Codigo = StringField('Codigo', validators=[DataRequired(), Length(max=10)])
+    Tipo = StringField('Tipo', validators=[DataRequired(), Length(max=45)])
+    Estado = StringField('Estado', validators=[DataRequired(), Length(max=10)])
+    Activo = StringField('Activo', validators=[DataRequired(), Length(max=2)])
+    Fecompra = DateField('Dia de compra del bien', format='%Y-%m-%d', validators=[DataRequired()])
+    Fematri = DateField('Fecha de Matriculacion', format='%Y-%m-%d', validators=[DataRequired()])
+    Activo = RadioField('Activo', choices=[('SI','Activo'), ('NO','Inactivo')], validators=[DataRequired()])
+    Proveedor = StringField('Proveedor', validators=[DataRequired(), Length(max=90)]) 
+    Factura = StringField('Factura', validators=[DataRequired(), Length(max=90)]) 
+    Marca = StringField('Marca', validators=[DataRequired(), Length(max=90)]) 
+    Modelo = StringField('Modelo', validators=[DataRequired(), Length(max=90)])
+    Matricula = StringField('Matricula', validators=[DataRequired(), Length(max=10)]) 
+    NSerie = StringField('Nº de serie', validators=[DataRequired(), Length(max=35)]) 
+    ITV = DateField('Dia ultima ITV', format='%Y-%m-%d', validators=[DataRequired()])
+    Lugar = StringField('Lugar', validators=[DataRequired(), Length(max=45)])  
+    Encargado = StringField('Encargado', validators=[DataRequired(), Length(max=45)])     
+    Observaciones = StringField('Observaciones', validators=[DataRequired(), Length(max=450)])  
+    submit = SubmitField('Guardar')
+
+class FiltroTareasForm(FlaskForm):
+    Esta = SelectField('Estado', choices=[('Pendiente','Pendiente'), ('En tramite','En tramite'), ('Problema y/o Incidencia','Problema y/o Incidencia'), ('Finalizado','Finalizado'), ('5','Todas')], validators=[DataRequired()])
+    submit = SubmitField('Guardar')
+
+class FiltrocontactosForm(FlaskForm):
+    Esta = SelectField('Estado', choices=[('Pendiente','Pendiente'), ('En tramite','En tramite'), ('Problema y/o Incidencia','Problema y/o Incidencia'), ('Finalizado','Finalizado'), ('5','Todas')], validators=[DataRequired()])
+    submit = SubmitField('Guardar')    

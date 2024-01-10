@@ -5,8 +5,21 @@
 {%block columna8 %}
 
 <link rel="stylesheet" href="{{ url_for('static', filename='css/contacto.css' ) }}">
+<div class="w3-container w3-teal" nombre="capa1">
+    <nav>
+        <div class="search-bar">
+            {% import "bootstrap/wtf.html" as wtf %}
+            {{ form.csrf_token() }}
+            {{ wtf.quick_form(form) }}
+        </div>
+        
+
+
+        
+    </nav>
+</div>
 <div class="capa1">
-    <div class="row row-col-1 row-cols-sm-4 row-cols-md-3 row-cols-lg-4 mt-3">
+           
         
         {% if (tareas) %} 
     

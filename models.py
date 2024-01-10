@@ -61,7 +61,7 @@ class Tareas(db.Model):
     Titulo = db.Column(db.String(120), nullable= False)
     Descripcion = db.Column(db.String(500), nullable= False)
     FECHA = db.Column(db.DateTime, nullable = False, default = datetime.utcnow)
-    Estado = db.Column(db.String(50), nullable= False)
+    Estado = db.Column(db.String(35), nullable= False)
    
 class Ordenadores(db.Model):
     __tablename__="Ordenadores"
@@ -84,7 +84,46 @@ class Ordenadores(db.Model):
     Encargado = db.Column(db.String(45), nullable= True)
     Observaciones = db.Column(db.String(450), nullable= True)
 
+class Maquinaria(db.Model):
+    __tablename__="Maquinaria"
+    id = db.Column(db.Integer, primary_key = True)
+    Codigo = db.Column(db.String(10), nullable= False)
+    Tipo = db.Column(db.String(45), nullable= False)
+    Estado = db.Column(db.String(10), nullable= True)
+    Activo = db.Column(db.String(2), nullable= True)
+    Fecompra = db.Column(db.DateTime, nullable = False, default = datetime.utcnow)
+    Proveedor = db.Column(db.String(90), nullable= True)
+    Factura = db.Column(db.String(90), nullable= True)
+    Marca = db.Column(db.String(45), nullable= True)
+    Modelo = db.Column(db.String(90), nullable= True)
+    NSerie = db.Column(db.String(45), nullable= True)
+    Lugar = db.Column(db.String(45), nullable= True)
+    Usubido = db.Column(db.String(45), nullable= True)
+    fsubida = db.Column(db.DateTime, nullable = False, default = datetime.utcnow)
+    Encargado = db.Column(db.String(45), nullable= True)
+    Observaciones = db.Column(db.String(450), nullable= True)    
 
+class Vehiculos(db.Model):
+    __tablename__="Vehiculos"
+    id = db.Column(db.Integer, primary_key = True)
+    Codigo = db.Column(db.String(10), nullable= False)
+    Tipo = db.Column(db.String(45), nullable= False)
+    Estado = db.Column(db.String(10), nullable= True)
+    Activo = db.Column(db.String(2), nullable= True)
+    Fecompra = db.Column(db.DateTime, nullable = False, default = datetime.utcnow)
+    Fematri = db.Column(db.DateTime, nullable = False, default = datetime.utcnow)
+    Proveedor = db.Column(db.String(90), nullable= True)
+    Factura = db.Column(db.String(90), nullable= True)
+    Marca = db.Column(db.String(45), nullable= True)
+    Modelo = db.Column(db.String(90), nullable= True)
+    Matricula = db.Column(db.String(10), nullable= True)
+    NSerie = db.Column(db.String(35), nullable= True)
+    ITV = db.Column(db.DateTime, nullable = False, default = datetime.utcnow)
+    Lugar = db.Column(db.String(45), nullable= True)
+    Usubido = db.Column(db.String(45), nullable= True)
+    fsubida = db.Column(db.DateTime, nullable = False, default = datetime.utcnow)
+    Encargado = db.Column(db.String(45), nullable= True)
+    Observaciones = db.Column(db.String(450), nullable= True)
 
 
 
