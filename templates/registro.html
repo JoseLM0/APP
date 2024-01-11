@@ -10,9 +10,9 @@
     <h4 class="alert-heading">Registro de Usuarios</h4>
     <p>Datos del Usuarios</p>
     {% else %}
-    <h4>Perfil de {{session["Usuario"]}}</h4> 
+    <h4>Perfil de {{ current_user.Usuario}}</h4> 
 
-    <p>Datos del Usuarios - Sobreescribalos para editar</p>
+    <p>Datos del Usuario - Sobreescribalos para editar</p>
     {% endif %}
      <!--BOOTSTRAP CSS --> 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">

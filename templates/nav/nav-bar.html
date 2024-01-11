@@ -9,10 +9,13 @@
         <li class="nav-item {% if request.endpoint=='inicio' %}active{% endif %}">
           <a class="nav-link" href="{{ url_for('inicio')}}">Inicio <span class="sr-only">(current)</span></a>
         </li>
-        
+        {% if current_user.is_authenticated %}
+        {% if current_user.Puesto <= 4 %}
         <li class="nav-item  {% if request.endpoint=='tareas' %}active{%endif %}">
           <a class="nav-link" href="{{ url_for('tareas')}}">Tareas</a>
         </li>
+        {%endif%}
+        {%endif%}
         <li class="nav-item {% if request.endpoint=='contactos' %}active{%endif %}">
           <a class="nav-link" href="{{ url_for('contactos')}}">Contacto</a>
           
@@ -21,7 +24,7 @@
         </li>
         <li class="nav-item dropdown ">
           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            INVENTARIO
+            INVENTARIO  
           </a>
           <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
             <a class="dropdown-item" href="{{ url_for('vehiculos')}}">Vehiculos</a>
@@ -31,9 +34,9 @@
           </div>
         </li> 
         
-        {% if session ["Usuario"] %}
+        {% if current_user.is_authenticated %}
         <div class="registro">
-          <h3>Bienvenido Usuario {{ session ["Usuario"]}} 
+          <h3>Bienvenido Usuario {{ current_user.Usuario}}
 
           </h3>
 
@@ -44,14 +47,14 @@
             Perfil
           </a>
           <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-            <a class="dropdown-item" href="/perfil/{{session["Usuario"]}}">Perfil de {{ session["Usuario"]}}</a>
-            
+            <a class="dropdown-item" href="/perfil/{{ current_user.Usuario}}"> Perfil de {{ current_user.Usuario}}</a>
+            {% if current_user.Puesto <= 4 %}
             <a class="dropdown-item" href="/registro"> Nuevo Usuario</button></a>
-            
-            
+            {%endif%}
+            {% if current_user.Puesto <= 4 %}
             <a class="dropdown-item" href="{{ url_for('personal')}}"> Lista de Personal</button></a>
-           
-            <a class="dropdown-item" href="/cambiarcontraseña/{{session["Usuario"]}}">Cambiar contraseña de {{ session["Usuario"]}}</a>
+            {%endif%}
+            <a class="dropdown-item" href="/cambiarcontraseña/{{ current_user.Usuario}}"> Cambiar contraseña de {{ current_user.Usuario}}</a>
             <a class="dropdown-item" href="/logout"> Salir sesion</button></a>
             
             

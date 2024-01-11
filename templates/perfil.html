@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/contacto.css' ) }}">
 <div class="capa">    
     <h4 class="alert-heading">Perfil de {{session["Usuario"]}}</h4>
-    <p>Perfil de {{session["Usuario"]}}</p>
+    <p>Perfil de {{ current_user.Usuario}}</p>
     <hr>
     <p class="mb-0">En prueba</p>
     

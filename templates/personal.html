@@ -35,10 +35,13 @@
                 <th scope="col">Segundo apellido</th>
                 <th scope="col">Correo</th>
                 <th scope="col">Puesto</th>
+                {% if current_user.Puesto <= 2 %}
                 <th scope="col">Ver</th>
                 <th scope="col">Editar</th>
                 <th scope="col">Cambiar <br>Contraseña</th>
                 <th scope="col">Borrar</th>
+                {%endif%}
+
             </tr>
         </thead>           
       {% for personal in personal %}
@@ -49,6 +52,9 @@
           <td>{{personal.Apellido2}}</td>
           <td>{{personal.Correo}}</td>
           <td>{{personal.Puesto}}</td>
+
+          
+          {% if current_user.Puesto <= 2 %}
           <td><button class="btn btn-primary btn-sm" id="btn-edit{{personal.id}}" data-bs-toggle="modal" data-bs-target="#modal{{personal.id}}">Ver</button></td>
           <td><form action="/editarpersonal/{{personal.id}}" method="POST">
               <input type="hidden" value="{{personal.id}}" name="id">
@@ -64,6 +70,7 @@
                     <input type="hidden" value="{{personal.id}}" name="id">
                     <button type="submit" class="btn btn-outline-danger btn-sm">Eliminar</button>
               </form> </td>  
+              {%endif%}
       </tr>                
       </div>
     </div>

@@ -3,7 +3,7 @@ from forms import Cambio_contraseña, Registro, Registro_contactos, Login_form, 
 from flask_sqlalchemy import SQLAlchemy
 from flask_bootstrap import Bootstrap  
 import config 
-from models import db, Usuarios, Contactos, Tareas, Ordenadores, Maquinaria, Vehiculos
+from models import db, Usuarios, Contactos, Tareas, Ordenadores, Maquinaria, Vehiculos, Puesto
 from sqlalchemy import or_ 
 from flask_login import LoginManager,login_user,logout_user,login_required,current_user
 from flask_mysqldb import MySQL
@@ -44,14 +44,14 @@ def inicio():
 
 @app.route('/login', methods=['GET','POST'])
 def login():
-    from login import abrir_sesion, estalogueado
-    if estalogueado():
-        return render_template('inicio')
+    if current_user.is_authenticated:
+        return redirect(url_for("inicio"))
     form = Login_form()
     if form.validate_on_submit():
         user = Usuarios.query.filter_by(Usuario = form.Usuario.data).first()
         if user is not None and user.verify_password(form.Password.data):
-            abrir_sesion(user)      
+            login_user(user)      
+            print(user)
             return redirect('inicio')
         form.Usuario.errors.append("Usuario o contraseña incorrecta")
     return render_template('login.html', form=form ) 
@@ -65,12 +65,10 @@ def logout():
 
 #Pestaña de Usuarios
 @app.route('/registro', methods = ['GET', 'POST'])
+@login_required
 def registro():
-    #from login import es_admin
-    #control permiso
-    #if not es_admin():
-        #abort(404)
     form = Registro()
+    del  form.Puesto
     if form.validate_on_submit():
         existe_usuario = Usuarios.query.filter_by(Usuario=form.Usuario.data).first()
         if existe_usuario is None:
@@ -83,12 +81,13 @@ def registro():
     return render_template('/registro.html', form=form)
 
 @app.route('/perfil/<Usuario>', methods = ['GET', 'POST'])
+@login_required
 def perfil(Usuario):
     user = Usuarios.query.filter_by(Usuario=Usuario).first()
-    if user is None:
-        abort(404)
     form = Registro(request.form, obj=user) 
-    del form.Password
+    del form.Usuario, form.Password, form.Puesto
+    if not Usuario == current_user.Usuario:
+        abort(404)
     if form.validate_on_submit():
         form.populate_obj(user)
         db.session.commit()
@@ -96,11 +95,14 @@ def perfil(Usuario):
     return render_template('/registro.html', form=form, perfil=True)
 
 @app.route('/cambiarcontraseña/<Usuario>', methods =['GET', 'POST'])
+@login_required
 def cambiarcontraseña(Usuario):
     user = Usuarios.query.filter_by(Usuario=Usuario).first()
     if user is None:
         abort(404)
     form = Cambio_contraseña()
+    if not Usuario == current_user.Usuario:
+        abort(404)
     if form.validate_on_submit():
         form.populate_obj(user)
         db.session.commit()
@@ -111,7 +113,12 @@ def cambiarcontraseña(Usuario):
 
 
 @app.route('/listadepersonal', methods=['GET', 'POST'])
+@login_required
 def personal(): 
+    #SEGURIDAD 
+    admin = current_user.Puesto <= 4
+    if admin is False:
+        abort(404)
     cursor = mysql.connection.cursor()
     cursor.execute("SELECT * FROM usuarios")
     personal = cursor.fetchall()
@@ -127,14 +134,15 @@ def personal():
         busqueda = form.busqueda.data
         buscado = buscado.filter(Usuarios.Nombre.like('%' + busqueda + '%'))
         buscado = buscado.order_by(Usuarios.Nombre).all()
-        return render_template('/buscarpersonal.html', form=form, busqueda = busqueda, buscado = buscado)
+        return render_template('/buscarpersonal.html', form=form, busqueda = busqueda, buscado = buscado )
     return render_template("/personal.html", personal = insertObject, form = form)
 
 @app.route('/borrarpersonal', methods=['POST'])
+@login_required
 def borrarpersonal():
-    from login import es_admin
-    #control permiso
-    if not es_admin():
+    #SEGURIDAD 
+    admin = current_user.Puesto <= 2
+    if admin is False:
         abort(404)
     cur = mysql.connection.cursor()
     id = request.form['id']
@@ -145,10 +153,13 @@ def borrarpersonal():
     return redirect(url_for('listadepersonal'))
 
 @app.route('/editarpersonal/<string:id>', methods = ['GET', 'POST'])
+@login_required
 def editarpersonal(id):
-    user = Usuarios.query.filter_by(id=id).first()
-    if user is None:
+    #SEGURIDAD 
+    admin = current_user.Puesto <= 2
+    if admin is False:
         abort(404)
+    user = Usuarios.query.filter_by(id=id).first()
     form = Registro(request.form, obj=user) 
     del form.Password
     if form.validate_on_submit():
@@ -158,10 +169,13 @@ def editarpersonal(id):
     return render_template('/editarpersonal.html', form=form, perfil=True)
 
 @app.route('/editarcontraseña/<string:id>', methods =['GET', 'POST'])
+@login_required
 def editarcontraseña(id):
-    user = Usuarios.query.filter_by(id=id).first()
-    if user is None:
+    #SEGURIDAD 
+    admin = current_user.Puesto <= 2
+    if admin is False:
         abort(404)
+    user = Usuarios.query.filter_by(id=id).first()
     form = Cambio_contraseña()
     if form.validate_on_submit():
         form.populate_obj(user)
@@ -173,10 +187,12 @@ def editarcontraseña(id):
    
 #Tareas
 @app.route('/tareas', methods=['GET', 'POST'])
+@login_required
 def tareas():
-    if session is False:
-        return redirect(url_for("login"))   
-    puesto = session['Puesto']
+    permiso = current_user.Puesto <= 4
+    if permiso is False:
+        abort(404)  
+    puesto = current_user.Puesto
     forma = FiltroTareasForm()
     form = Buscador()    
     cur = mysql.connection.cursor()
@@ -213,12 +229,16 @@ def tareas():
 
 
 @app.route('/nuevatarea', methods=['POST'])
+@login_required
 def nueva_tarea():
+    permiso = current_user.Puesto <= 4
+    if permiso is False:
+        abort(404)  
     titulo = request.form['Titulo']
     descripcion = request.form['Descripcion']
     estado = request.form['Estado']
-    user = session['Usuario']
-    puesto = session['Puesto']
+    user = current_user.Usuario
+    puesto = current_user.Puesto
     d = datetime.now()
     diaTarea = d.strftime("%Y-%m-%d %H:%M:%S")
 
@@ -231,7 +251,11 @@ def nueva_tarea():
     return redirect(url_for('tareas'))
     
 @app.route('/borrartarea', methods=['POST'])
+@login_required
 def borrartarea():
+    permiso = current_user.Puesto <= 4
+    if permiso is False:
+        abort(404)  
     cur = mysql.connection.cursor()
     id = request.form['id']
     sql = "DELETE FROM tareas WHERE id = %s"
@@ -241,6 +265,7 @@ def borrartarea():
     return redirect(url_for('tareas'))
 
 @app.route('/editartareas/<string:id>', methods=['POST'])
+@login_required
 def editartareas(id):
 
     titulo = request.form['Titulo']
@@ -259,10 +284,8 @@ def editartareas(id):
 
 
 @app.route('/prueba', methods=['GET'])
+@login_required
 def prueba():
-    from login import estalogueado
-    if not estalogueado:
-        abort(404) 
     return render_template('/prueba.html')
    
 
@@ -310,14 +333,12 @@ def contactos():
 
 
 @app.route('/nuevocontacto', methods=['GET', 'POST'])    
+@login_required
 def nuevocontacto():
-    if not estalogueado:
-        abort(404)  
     form = Registro_contactos()
     d = datetime.now()
-    diasubidad = d.strftime("%Y/%Y/%D $H:%M:%S")
-    #user = session['Usuario']
-    user = ['Usuario']
+    diasubidad = d.strftime("%Y-%m-%d $H:%M:%S")
+    user = current_user.Usuario
     if form.validate_on_submit():
         contacto = Contactos(Nombre = form.Nombre.data, Apellido1 = form.Apellido1.data, Apellido2 = form.Apellido2.data, Telefono1 = form.Telefono1.data, Telefono2 = form.Telefono2.data, Calle = form.Calle.data, Poblacion = form.Poblacion.data, Provincia = form.Provincia.data, Pais = form.Pais.data, Correo1 = form.Correo1.data, Correo2 = form.Correo2.data, Empresa = form.Empresa.data, fechasubida = diasubidad, usuariosubida = user)
         db.session.add(contacto)
@@ -329,9 +350,8 @@ def nuevocontacto():
     return render_template('/nuevocontacto.html', form=form)
 
 @app.route('/borrarcontacto', methods=['POST'])
+@login_required
 def borrarcontacto():
-    if users is False:
-        return redirect(url_for('login')) 
     cur = mysql.connection.cursor()
     id = request.form['id']
     sql = "DELETE FROM contactos WHERE id = %s"
@@ -341,6 +361,7 @@ def borrarcontacto():
     return redirect(url_for('contactos'))
 
 @app.route('/editarcontacto/<string:id>', methods = ['GET', 'POST'])
+@login_required
 def editarcontacto(id):
     user = Contactos.query.filter_by(id=id).first()
     if user is None:
@@ -391,11 +412,12 @@ def equipos_informaticos():
 
 
 @app.route('/nuevoordenador', methods=['GET', 'POST'])    
+@login_required
 def nuevoordenador():
     form = Ordenadoresform()
     d = datetime.now()
-    diasubidad = d.strftime("%Y/%m/%d $H:%M:%S")
-    user = session['Usuario']
+    diasubidad = d.strftime("%Y-%m-%d $H:%M:%S")
+    user = current_user.Usuario
     if form.validate_on_submit():
         contacto = Ordenadores(Codigo = form.Codigo.data, Tipo = form.Tipo.data, Estado = form.Estado.data, Activo = form.Activo.data, Fecompra = form.Fecompra.data, Proveedor = form.Proveedor.data, Factura = form.Factura.data, Marca = form.Marca.data, Modelo = form.Modelo.data, CPU = form.CPU.data, SO = form.SO.data, MemoriaRam = form.MemoriaRam.data, Lugar = form.Lugar.data, Encargado = form.Encargado.data, Observaciones = form.Observaciones.data, fsubida = diasubidad, Usubido = user)
         db.session.add(contacto)
@@ -407,6 +429,7 @@ def nuevoordenador():
     return render_template('/nuevoequipo.html', form=form)
 
 @app.route('/borrarordenador', methods=['POST'])
+@login_required
 def borrarordenador():
     cur = mysql.connection.cursor()
     id = request.form['id']
@@ -417,6 +440,7 @@ def borrarordenador():
     return redirect(url_for('equipos_informaticos'))
 
 @app.route('/editarordenador/<string:id>', methods = ['GET', 'POST'])
+@login_required
 def editarordenador(id):
     user = Ordenadores.query.filter_by(id=id).first()
     if user is None:
@@ -466,12 +490,13 @@ def maquinaria():
     return render_template('/maquinaria.html', maquinaria = insertObject, form = form)
 
 
-@app.route('/nuevamaquinaria', methods=['GET', 'POST'])    
+@app.route('/nuevamaquinaria', methods=['GET', 'POST']) 
+@login_required   
 def nuevamaquinaria():
     form = MaquinariaForm()
     d = datetime.now()
-    diasubidad = d.strftime("%Y/%m/%d $H:%M:%S")
-    user = session['Usuario']
+    diasubidad = d.strftime("%Y-%m-%d $H:%M:%S")
+    user = current_user.Usuario
     if form.validate_on_submit():
         nuevo = Maquinaria(Codigo = form.Codigo.data, Tipo = form.Tipo.data, Estado = form.Estado.data, Activo = form.Activo.data, Fecompra = form.Fecompra.data, Proveedor = form.Proveedor.data, Factura = form.Factura.data, Marca = form.Marca.data, Modelo = form.Modelo.data, NSerie = form.NSerie.data, Lugar = form.Lugar.data, Encargado = form.Encargado.data, Observaciones = form.Observaciones.data, fsubida = diasubidad, Usubido = user)
         db.session.add(nuevo)
@@ -483,6 +508,7 @@ def nuevamaquinaria():
     return render_template('/nuevamaquina.html', form=form)
 
 @app.route('/borrarmaquina', methods=['POST'])
+@login_required
 def borrarmaquina():
     cur = mysql.connection.cursor()
     id = request.form['id']
@@ -493,6 +519,7 @@ def borrarmaquina():
     return redirect(url_for('maquinaria'))
 
 @app.route('/editarmaquinaria/<string:id>', methods = ['GET', 'POST'])
+@login_required
 def editarmaquinaria(id):
     user = Maquinaria.query.filter_by(id=id).first()
     if user is None:
@@ -544,12 +571,13 @@ def vehiculos():
     return render_template('/vehiculos.html', vehiculos = insertObject, form = form)
 
 
-@app.route('/nuevovehiculos', methods=['GET', 'POST'])    
+@app.route('/nuevovehiculos', methods=['GET', 'POST'])   
+@login_required 
 def nuevovehiculos():
     form = VehiculosForm()
     d = datetime.now()
-    diasubidad = d.strftime("%Y/%m/%d $H:%M:%S")
-    user = session['Usuario']
+    diasubidad = d.strftime("%Y-%m-%d $H:%M:%S")
+    user = current_user.Usuario
     if form.validate_on_submit():
         contacto = Vehiculos(Codigo = form.Codigo.data, Tipo = form.Tipo.data, Estado = form.Estado.data, Activo = form.Activo.data, Fecompra = form.Fecompra.data, Fematri = form.Fematri.data, Proveedor = form.Proveedor.data, Factura = form.Factura.data, Marca = form.Marca.data, Modelo = form.Modelo.data, Matricula = form.Matricula.data, ITV = form.ITV.data, NSerie = form.NSerie.data, Lugar = form.Lugar.data, Encargado = form.Encargado.data, Observaciones = form.Observaciones.data, fsubida = diasubidad, Usubido = user)
         db.session.add(contacto)
@@ -561,6 +589,7 @@ def nuevovehiculos():
     return render_template('/nuevovehiculos.html', form=form)
 
 @app.route('/borrarvehiculos', methods=['POST'])
+@login_required
 def borrarvehiculos():
     cur = mysql.connection.cursor()
     id = request.form['id']
@@ -571,6 +600,7 @@ def borrarvehiculos():
     return redirect(url_for('vehiculos'))
 
 @app.route('/editarvehiculos/<string:id>', methods = ['GET', 'POST'])
+@login_required
 def editarvehiculos(id):
     user = Vehiculos.query.filter_by(id=id).first()
     if user is None:
@@ -583,20 +613,22 @@ def editarvehiculos(id):
     return render_template('/editarvehiculos.html', form=form, perfil=True)
 
 
+@login_manager.user_loader
+def load_user(id):
+	return Usuarios.query.get(int(id))
 
 
-with app.app_context():
-    db.create_all()
-    db.session.commit()
 
-    users = Usuarios.query.all()
-    print(users)
 
-def estalogueado():
-    if "id" in session:
-        return True
-    else:
-        return False   
+
+print(load_user)
+#with app.app_context():
+    #db.create_all()
+    #db.session.commit()
+
+    #users = Usuarios.query.all()
+    #print(users)
+
 
 
 if __name__ == '__main__':

@@ -24,6 +24,7 @@ class Usuarios(db.Model, UserMixin):
     def Password(self):
         raise AttributeError('password is not a readable atribute')
     
+    
     @Password.setter
     def Password(self, Password):
         self.password_hash = generate_password_hash(Password)
@@ -35,6 +36,21 @@ class Usuarios(db.Model, UserMixin):
         if not self.id:
             db.session.add(self)
         db.session.commit()
+
+    #Flask Login Interaciones  
+    def is_authenticated(self):
+        return True
+
+    def is_active(self):
+        return True
+
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        return str(self.id)
+
+    
 
 class Contactos(db.Model):
     __tablename__="contactos"
@@ -125,11 +141,8 @@ class Vehiculos(db.Model):
     Encargado = db.Column(db.String(45), nullable= True)
     Observaciones = db.Column(db.String(450), nullable= True)
 
-
-
-
-
-
-
-
+class Puesto(db.Model):
+    __tablename__="Puestos"
+    id_rol = db.Column(db.Integer, primary_key = True)
+    Descripcion = db.Column(db.String(50), nullable= False)
 
