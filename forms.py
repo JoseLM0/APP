@@ -51,9 +51,9 @@ class Cambio_contraseña(FlaskForm):
 
 # Buscador    
 class Buscador(FlaskForm):
-    busqueda = StringField("Descripcion", validators=[DataRequired()])  
+    busqueda = StringField("", validators=[DataRequired()], render_kw={"placeholder": "Introduce la busqueda"})  
     #categorias = RadioField('Categorias', choices=[('1','Titulo'), ('2','Descripcion')], validators=[DataRequired()])
-    submit = SubmitField('Entrar')
+    submit = SubmitField('Buscar')
 
 class Ordenadoresform(FlaskForm):
     Codigo = StringField('Codigo', validators=[DataRequired(), Length(max=10)])
@@ -112,9 +112,9 @@ class VehiculosForm(FlaskForm):
     submit = SubmitField('Guardar')
 
 class FiltroTareasForm(FlaskForm):
-    Esta = SelectField('Estado', choices=[('Pendiente','Pendiente'), ('En tramite','En tramite'), ('Problema y/o Incidencia','Problema y/o Incidencia'), ('Finalizado','Finalizado'), ('5','Todas')], validators=[DataRequired()])
-    submit = SubmitField('Guardar')
+    Esta = SelectField('', choices=[('Pendiente','Pendiente'), ('En tramite','En tramite'), ('Problema y/o Incidencia','Problema y/o Incidencia'), ('Finalizado','Finalizado'), ('5','Todas')], validators=[DataRequired()])
+    submit = SubmitField('Filtrar')
 
 class FiltrocontactosForm(FlaskForm):
-    Esta = SelectField('Estado', choices=[('Pendiente','Pendiente'), ('En tramite','En tramite'), ('Problema y/o Incidencia','Problema y/o Incidencia'), ('Finalizado','Finalizado'), ('5','Todas')], validators=[DataRequired()])
-    submit = SubmitField('Guardar')    
+    Esta = SelectField('Estado', choices=[('5','Todas'), ('Pendiente','Pendiente'), ('En tramite','En tramite'), ('Problema y/o Incidencia','Problema y/o Incidencia'), ('Finalizado','Finalizado') ], validators=[DataRequired()])
+    submit = SubmitField('Enviar')    

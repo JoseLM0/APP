@@ -30,7 +30,6 @@
             <a class="dropdown-item" href="{{ url_for('vehiculos')}}">Vehiculos</a>
             <a class="dropdown-item" href="{{ url_for('maquinaria')}}">Maquinaria</a>
             <a class="dropdown-item" href="{{ url_for('equipos_informaticos')}}">Equipos Informaticos</a>
-            <a class="dropdown-item" href="{{ url_for('prueba')}}">Prueba</a>
           </div>
         </li> 
         
@@ -48,9 +47,6 @@
           </a>
           <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
             <a class="dropdown-item" href="/perfil/{{ current_user.Usuario}}"> Perfil de {{ current_user.Usuario}}</a>
-            {% if current_user.Puesto <= 4 %}
-            <a class="dropdown-item" href="/registro"> Nuevo Usuario</button></a>
-            {%endif%}
             {% if current_user.Puesto <= 4 %}
             <a class="dropdown-item" href="{{ url_for('personal')}}"> Lista de Personal</button></a>
             {%endif%}

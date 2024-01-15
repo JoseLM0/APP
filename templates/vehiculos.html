@@ -12,22 +12,30 @@
 
 <link rel="stylesheet" href="{{ url_for('static', filename='css/contacto.css' ) }}">
 <br>
+</div> 
+</div> 
 
 
-<div class="capa1" role="alert" name="capa1">
-    
-    <div class="container">
-      
-      <div class="card shadow">
-        <a class="nav-link" href="{{ url_for('nuevovehiculos')}}">Nuevo</a>
- 
-      <table class="table table-bordered" name="tabla">
-        <h3 class="alert-heading">Inventario de Vehiculos 
+<div class="tabla1" role="alert" name="tabla1">
+    <div class="row row-cols-3 row-cols-lg-3"> 
+        <div class="container1">
+            <h1 class="alert-heading">Listado de Vehiculos </h3> 
+        </div>  
+        <div class="container">
 
             {% import "bootstrap/wtf.html" as wtf %}
             {{ form.csrf_token() }}
-            {{ wtf.quick_form(form) }}
-        </h3>
+            {{ wtf.quick_form(form, button_map={'submit':'primary'})  }}
+        </div>
+        <div class="botondi">
+            <a class="nav-link" href="{{ url_for('nuevocontacto')}}">
+            <button class="btn btn-primary btn-sm">Nuevo Vehiculo</button>
+            </a>
+        </div>
+    </div>
+    
+      <table class="table table-bordered" name="tabla">
+ 
         <thead>
             <tr>
                 <th scope="col">Codigo</th>
@@ -74,7 +82,7 @@
               </form> </td>  
       </tr>                
       </div>
-    </div>
+
 </div>
               
 

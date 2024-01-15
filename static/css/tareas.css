@@ -1,5 +1,38 @@
-.capa1{
+
+  .search-bar1 {
+    float: right;
+    display: block;
+    color: rgb(255, 0, 0);;
     
+    padding: 2px 2px;
+
+    font-size: 17px;
+  }
+
+  .search-bar2 {
+
+    display: block;
+    color: rgb(255, 255, 255);
+    padding: 2px 2px;
+    font-size: 17px;
+  }
+
+  
+  .container1 {
+    float: left;
+
+    color: rgb(255, 255, 255);
+  }
 
 
-}
+  .search-addon {
+    float: right;
+    display: block;
+    color: rgb(255, 255, 255);
+    text-align: center;
+    padding: 140px 160px;
+    text-decoration: none;
+    font-size: 17px;
+  }
+
+  

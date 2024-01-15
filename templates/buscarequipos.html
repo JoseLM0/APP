@@ -1,6 +1,6 @@
 {% extends "base/base.html" %}
 
-{% block title %}Equipos{% endblock %}
+{% block title %}Buscar Equipos{% endblock %}
 
 {%block columna8 %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/tareas.css' ) }}">
@@ -12,21 +12,30 @@
 
 <link rel="stylesheet" href="{{ url_for('static', filename='css/contacto.css' ) }}">
 <br>
-<div class="capa1" role="alert" name="capa1">
-    
-    <div class="container">
-      
-      <div class="card shadow">
+</div> 
+</div> 
 
 
-        
-      <table class="table table-bordered" name="tabla">
-        <h3 class="alert-heading">Lista de personal  
+<div class="tabla1" role="alert" name="tabla1">
+    <div class="row row-cols-3 row-cols-lg-3"> 
+        <div class="container1">
+            <h1 class="alert-heading">Resultado busqueda:   {{busqueda }} </h3> 
+        </div>  
+        <div class="container">
 
             {% import "bootstrap/wtf.html" as wtf %}
             {{ form.csrf_token() }}
-            {{ wtf.quick_form(form) }}
-        </h3>
+            {{ wtf.quick_form(form, button_map={'submit':'primary'})  }}
+        </div>
+        <div class="botondi">
+            <a class="nav-link" href="{{ url_for('nuevoordenador')}}">
+            <button class="btn btn-primary btn-sm">Nuevo Equipo Informatico</button>
+            </a>
+        </div>
+    </div>
+    
+      <table class="table table-bordered" name="tabla">
+ 
         <thead>
             <tr>
                 <th scope="col">Codigo</th>

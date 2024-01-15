@@ -272,7 +272,7 @@ def editartareas(id):
     descripcion = request.form['Descripcion']
     estado = request.form['Estado']
     d = datetime.now()
-    diaTarea = d.strftime("%Y-%m-%d $H:%M:%S")
+    diaTarea = d.strftime("%Y-%m-%d %H:%M:%S")
 
     if titulo and descripcion and estado: 
         cursor = mysql.connection.cursor()
@@ -283,10 +283,6 @@ def editartareas(id):
     return redirect(url_for('tareas'))
 
 
-@app.route('/prueba', methods=['GET'])
-@login_required
-def prueba():
-    return render_template('/prueba.html')
    
 
 

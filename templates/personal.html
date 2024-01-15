@@ -12,20 +12,26 @@
 
 <link rel="stylesheet" href="{{ url_for('static', filename='css/contacto.css' ) }}">
 <br>
-<div class="capa1" role="alert" name="capa1">
-    
-    <div class="container">
-      
-      <div class="card shadow">
-
-
-        
-      <table class="table table-bordered" name="tabla">
-        <h3 class="alert-heading">Lista de personal  
+<div class="tabla1" role="alert" name="tabla1">
+    <div class="row row-cols-3 row-cols-lg-3"> 
+        <div class="container1">
+            <h1 class="alert-heading">Lista de Personal </h3> 
+        </div>  
+        <div class="container">
 
             {% import "bootstrap/wtf.html" as wtf %}
             {{ form.csrf_token() }}
-            {{ wtf.quick_form(form) }}
+            {{ wtf.quick_form(form, button_map={'submit':'primary'})  }}
+        </div>
+        {% if current_user.Puesto <= 4 %}
+        <div class="botondi">
+            <a class="nav-link" href="{{ url_for('registro')}}">
+            <button class="btn btn-primary btn-sm">Nuevo Personal</button>
+            </a>
+        </div>
+        {%endif%}
+      <table class="table table-bordered" name="tabla">
+
         </h3>
         <thead>
             <tr>
@@ -72,8 +78,8 @@
               </form> </td>  
               {%endif%}
       </tr>                
-      </div>
-    </div>
+
+
 </div>
               
 

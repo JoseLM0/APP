@@ -4,7 +4,7 @@
 
 {%block columna8 %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/tareas.css' ) }}">
-<title>Personal</title>
+<title>Contactos</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
 </head>
@@ -12,22 +12,31 @@
 
 <link rel="stylesheet" href="{{ url_for('static', filename='css/contacto.css' ) }}">
 <br>
-<div class="capa1" role="alert" name="capa1">
-    
-    <div class="container">
-      
-      <div class="card shadow">
-        <a class="nav-link" href="{{ url_for('nuevocontacto')}}">Contacto</a>
+
+</div> 
+</div> 
 
 
-        
-      <table class="table table-bordered" name="tabla">
-        <h3 class="alert-heading">Lista de personal  
+<div class="tabla1" role="alert" name="tabla1">
+    <div class="row row-cols-3 row-cols-lg-3"> 
+        <div class="container1">
+            <h1 class="alert-heading">Listado de Contactos </h3> 
+        </div>  
+        <div class="container">
 
             {% import "bootstrap/wtf.html" as wtf %}
             {{ form.csrf_token() }}
-            {{ wtf.quick_form(form) }}
-        </h3>
+            {{ wtf.quick_form(form, button_map={'submit':'primary'})  }}
+        </div>
+        <div class="botondi">
+            <a class="nav-link" href="{{ url_for('nuevocontacto')}}">
+            <button class="btn btn-primary btn-sm">Nuevo Contacto</button>
+            </a>
+        </div>
+    </div>
+    
+      <table class="table table-bordered" name="tabla">
+ 
         <thead>
             <tr>
                 <th scope="col">Nombre</th>
